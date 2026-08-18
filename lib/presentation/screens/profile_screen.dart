@@ -1,0 +1,307 @@
+import 'package:flutter/material.dart';
+
+/// User Profile Detail screen (Aria Moon profile view).
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  Widget build(BuildContext context) {
+    const backgroundColor = Color(0xFFF7F7FD);
+
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Top App Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              child: Row(
+                children: [
+                  // Back Button
+                  InkWell(
+                    onTap: () => Navigator.of(context).pop(),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF006884),
+                        size: 22,
+                      ),
+                    ),
+                  ),
+
+                  // Header Title Centered
+                  const Expanded(
+                    child: Text(
+                      'Divine Readings',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF006884),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 36),
+                ],
+              ),
+            ),
+
+            // Scrollable Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16),
+
+                    // User Profile Picture Header with Edit Pencil Badge
+                    Center(
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFFE2E8F0),
+                              border: Border.all(
+                                color: const Color(0xFFE5F1FF),
+                                width: 4,
+                              ),
+                            ),
+                            child: ClipOval(
+                              child: Icon(
+                                Icons.person,
+                                size: 60,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+
+                          // Edit Pencil Circular Badge
+                          Positioned(
+                            bottom: 2,
+                            right: 2,
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0xFF006884),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                size: 15,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    // User Name
+                    const Text(
+                      'Aria Moon',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF101828),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+
+                    // User Email
+                    const Text(
+                      'aria.moon@example.com',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF667085),
+                      ),
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Menu Option Cards
+                    _buildOptionCard(
+                      icon: Icons.person_outline_rounded,
+                      title: 'Personal Information',
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/language');
+                      },
+                    ),
+                    const SizedBox(height: 10),
+
+                    _buildOptionCard(
+                      icon: Icons.favorite_border_rounded,
+                      title: 'Reading Preferences',
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 10),
+
+                    _buildOptionCard(
+                      icon: Icons.star_outline_rounded,
+                      title: 'Subscription Plan',
+                      subtitle: 'Premium',
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 10),
+
+                    _buildOptionCard(
+                      icon: Icons.link_rounded,
+                      title: 'Linked Accounts',
+                      onTap: () {},
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Log Out Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFF0F0),
+                          foregroundColor: const Color(0xFFDC2626),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(
+                              Icons.logout_rounded,
+                              color: Color(0xFFDC2626),
+                              size: 20,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Log Out',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFDC2626),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionCard({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFF2F4F7),
+            width: 1.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Soft Blue Circle Icon Badge
+            Container(
+              width: 44,
+              height: 44,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFFEBF5FF),
+              ),
+              child: Icon(
+                icon,
+                color: const Color(0xFF0088B2),
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 14),
+
+            // Title & Subtitle
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF0088B2),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            // Right Chevron Arrow
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Color(0xFFD0D5DD),
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

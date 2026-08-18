@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'core/theme/app_theme.dart';
+import 'core/constants/reading_types.dart';
+import 'core/l10n/generated/app_localizations.dart';
+import 'state/providers/locale_provider.dart';
+import 'presentation/screens/main_screen.dart';
+import 'presentation/screens/language_selection_screen.dart';
+import 'presentation/screens/reading_input_screen.dart';
+import 'presentation/screens/reading_detail_screen.dart';
+import 'presentation/screens/card_select_screen.dart';
+import 'presentation/screens/compatibility_input_screen.dart';
+import 'presentation/screens/profile_screen.dart';
+import 'presentation/screens/daily_tarot_screen.dart';
+import 'presentation/widgets/divine_loading_widget.dart';
+
+class MysticTarotApp extends ConsumerWidget {
+  const MysticTarotApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(localeProvider);
+    final isFirstLaunch = ref.watch(isFirstLaunchProvider);
+
+    return MaterialApp(
+      title: 'Mystic Tarot',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      initialRoute: isFirstLaunch ? '/language' : '/home',
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/language':
+            return MaterialPageRoute(
+              builder: (_) => const LanguageSelectionScreen(),
+            );
+          case '/home':
+            return MaterialPageRoute(
+              builder: (_) => const MainScreen(initialIndex: 0),
+            );
+          case '/saved':
+            return MaterialPageRoute(
+              builder: (_) => const MainScreen(initialIndex: 1),
+            );
+          case '/settings':
+            return MaterialPageRoute(
+              builder: (_) => const MainScreen(initialIndex: 2),
+            );
+          case '/profile':
+            return MaterialPageRoute(
+              builder: (_) => const ProfileScreen(),
+            );
+          case '/daily-tarot':
+            return MaterialPageRoute(
+              builder: (_) => const DailyTarotScreen(),
+            );
+          case '/loading':
+            return MaterialPageRoute(
+              builder: (_) => const DivineLoadingWidget(),
+            );
+          case '/reading-input':
+            final readingType = settings.arguments as ReadingType;
+            return MaterialPageRoute(
+              builder: (_) => ReadingInputScreen(readingType: readingType),
+            );
+          case '/reading-detail':
+            final args = settings.arguments;
+            if (args is ReadingType) {
+              return MaterialPageRoute(
+                builder: (_) => ReadingDetailScreen(readingType: args),
+              );
+            } else if (args is Map<String, dynamic>) {
+              return MaterialPageRoute(
+                builder: (_) => ReadingDetailScreen(
+                  readingType: args['readingType'] as ReadingType,
+                  cardImage: args['cardImage'] as String?,
+                  sign1: args['sign1'] as String?,
+                  sign2: args['sign2'] as String?,
+                ),
+              );
+            }
+            return MaterialPageRoute(builder: (_) => const MainScreen());
+          case '/card-select':
+            final readingType = settings.arguments as ReadingType;
+            return MaterialPageRoute(
+              builder: (_) => CardSelectScreen(readingType: readingType),
+            );
+          case '/compatibility-input':
+            final readingType = settings.arguments as ReadingType;
+            return MaterialPageRoute(
+              builder: (_) => CompatibilityInputScreen(readingType: readingType),
+            );
+          default:
+            return MaterialPageRoute(builder: (_) => const MainScreen());
+        }
+      },
+    );
+  }
+}
