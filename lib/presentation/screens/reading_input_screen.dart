@@ -25,6 +25,27 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
   String? _selectedGender;
   String? _selectedZodiacSign;
 
+  String? _questionError;
+  String? _nameError;
+  String? _dobError;
+  String? _genderError;
+  String? _zodiacError;
+
+  @override
+  void initState() {
+    super.initState();
+    _questionController.addListener(() {
+      if (_questionError != null && _questionController.text.trim().isNotEmpty) {
+        setState(() => _questionError = null);
+      }
+    });
+    _nameController.addListener(() {
+      if (_nameError != null && _nameController.text.trim().isNotEmpty) {
+        setState(() => _nameError = null);
+      }
+    });
+  }
+
   @override
   void dispose() {
     _questionController.dispose();
@@ -56,6 +77,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
       setState(() {
         _dobController.text =
             "${picked.month.toString().padLeft(2, '0')}/${picked.day.toString().padLeft(2, '0')}/${picked.year}";
+        _dobError = null;
       });
     }
   }
@@ -120,6 +142,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                     onTap: () {
                       setState(() {
                         _selectedGender = gender;
+                        _genderError = null;
                       });
                       Navigator.pop(ctx);
                     },
@@ -248,6 +271,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                       onTap: () {
                         setState(() {
                           _selectedZodiacSign = sign;
+                          _zodiacError = null;
                         });
                         Navigator.pop(ctx);
                       },
@@ -312,6 +336,56 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
   }
 
   void _startReading() {
+    final question = _questionController.text.trim();
+    final name = _nameController.text.trim();
+    final dob = _dobController.text.trim();
+    final gender = _selectedGender;
+    final sign = _selectedZodiacSign;
+
+    setState(() {
+      _questionError = question.isEmpty ? 'Please enter your question' : null;
+      _nameError = name.isEmpty ? 'Please enter your full name' : null;
+      _dobError = dob.isEmpty ? 'Please select date of birth' : null;
+      _genderError = gender == null ? 'Please select gender' : null;
+      _zodiacError = sign == null ? 'Please select zodiac sign' : null;
+    });
+
+    if (question.isEmpty ||
+        name.isEmpty ||
+        dob.isEmpty ||
+        gender == null ||
+        sign == null) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.white, size: 22),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Please fill in all required fields to continue.',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFFD92D20),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     if (widget.readingType.inputType == ReadingInputType.cardSelect) {
       Navigator.of(context).pushNamed(
         '/card-select',
@@ -467,7 +541,10 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                             controller: _questionController,
                             maxLines: 3,
                             style: const TextStyle(fontSize: 14, color: Color(0xFF101828)),
-                            decoration: _buildInputDecoration('What do you seek clarity on?'),
+                            decoration: _buildInputDecoration(
+                              'What do you seek clarity on?',
+                              errorText: _questionError,
+                            ),
                           ),
                           const SizedBox(height: 18),
 
@@ -477,7 +554,10 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                           TextField(
                             controller: _nameController,
                             style: const TextStyle(fontSize: 14, color: Color(0xFF101828)),
-                            decoration: _buildInputDecoration('Enter your full name'),
+                            decoration: _buildInputDecoration(
+                              'Enter your full name',
+                              errorText: _nameError,
+                            ),
                           ),
                           const SizedBox(height: 18),
 
@@ -489,7 +569,10 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                             readOnly: true,
                             onTap: () => _selectDate(context),
                             style: const TextStyle(fontSize: 14, color: Color(0xFF101828)),
-                            decoration: _buildInputDecoration('mm/dd/yyyy').copyWith(
+                            decoration: _buildInputDecoration(
+                              'mm/dd/yyyy',
+                              errorText: _dobError,
+                            ).copyWith(
                               suffixIcon: const Icon(
                                 Icons.calendar_today_outlined,
                                 color: Color(0xFF667085),
@@ -506,7 +589,10 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                             onTap: () => _showGenderBottomSheet(context),
                             borderRadius: BorderRadius.circular(12),
                             child: InputDecorator(
-                              decoration: _buildInputDecoration('Select').copyWith(
+                              decoration: _buildInputDecoration(
+                                'Select',
+                                errorText: _genderError,
+                              ).copyWith(
                                 suffixIcon: const Icon(
                                   Icons.keyboard_arrow_down_rounded,
                                   color: Color(0xFF667085),
@@ -533,7 +619,10 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                             onTap: () => _showZodiacBottomSheet(context),
                             borderRadius: BorderRadius.circular(12),
                             child: InputDecorator(
-                              decoration: _buildInputDecoration('Select sign').copyWith(
+                              decoration: _buildInputDecoration(
+                                'Select sign',
+                                errorText: _zodiacError,
+                              ).copyWith(
                                 suffixIcon: const Icon(
                                   Icons.keyboard_arrow_down_rounded,
                                   color: Color(0xFF667085),
@@ -616,9 +705,15 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String hint) {
+  InputDecoration _buildInputDecoration(String hint, {String? errorText}) {
     return InputDecoration(
       hintText: hint,
+      errorText: errorText,
+      errorStyle: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: Color(0xFFD92D20),
+      ),
       hintStyle: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
@@ -634,6 +729,14 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFF006884), width: 1.5),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFD92D20), width: 1.2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFD92D20), width: 1.5),
       ),
     );
   }
