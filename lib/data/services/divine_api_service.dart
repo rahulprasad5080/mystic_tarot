@@ -8,7 +8,6 @@ import '../models/dual_card_result.dart';
 import '../models/love_compatibility_result.dart';
 import '../models/coffee_cup_result.dart';
 import '../models/special_results.dart';
-import '../models/horoscope_result.dart';
 
 /// HTTP client for all DivineAPI endpoints.
 ///
@@ -63,83 +62,6 @@ class DivineApiService {
     }
   }
 
-  // ────────────────────────── Horoscopes ──────────────────────────────
-
-  /// Get Daily Horoscope prediction for a zodiac sign.
-  Future<ApiResponse<HoroscopeResult>> getDailyHoroscope({
-    required String sign,
-    String hDay = 'today',
-    String timeZone = '5.5',
-    required String language,
-  }) async {
-    final request = _createRequest(
-      ApiConstants.dailyHoroscope,
-      language: language,
-    );
-    request.fields['sign'] = sign.toLowerCase();
-    request.fields['h_day'] = hDay;
-    request.fields['tzone'] = timeZone;
-
-    final json = await _sendRequest(request);
-    return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
-  }
-
-  /// Get Weekly Horoscope prediction for a zodiac sign.
-  Future<ApiResponse<HoroscopeResult>> getWeeklyHoroscope({
-    required String sign,
-    String week = 'current',
-    String timeZone = '5.5',
-    required String language,
-  }) async {
-    final request = _createRequest(
-      ApiConstants.weeklyHoroscope,
-      language: language,
-    );
-    request.fields['sign'] = sign.toLowerCase();
-    request.fields['week'] = week;
-    request.fields['tzone'] = timeZone;
-
-    final json = await _sendRequest(request);
-    return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
-  }
-
-  /// Get Monthly Horoscope prediction for a zodiac sign.
-  Future<ApiResponse<HoroscopeResult>> getMonthlyHoroscope({
-    required String sign,
-    String month = 'current',
-    String timeZone = '5.5',
-    required String language,
-  }) async {
-    final request = _createRequest(
-      ApiConstants.monthlyHoroscope,
-      language: language,
-    );
-    request.fields['sign'] = sign.toLowerCase();
-    request.fields['month'] = month;
-    request.fields['tzone'] = timeZone;
-
-    final json = await _sendRequest(request);
-    return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
-  }
-
-  /// Get Yearly Horoscope prediction for a zodiac sign.
-  Future<ApiResponse<HoroscopeResult>> getYearlyHoroscope({
-    required String sign,
-    String year = 'current',
-    String timeZone = '5.5',
-    required String language,
-  }) async {
-    final request = _createRequest(
-      ApiConstants.yearlyHoroscope,
-      language: language,
-    );
-    request.fields['sign'] = sign.toLowerCase();
-    request.fields['year'] = year;
-    request.fields['tzone'] = timeZone;
-
-    final json = await _sendRequest(request);
-    return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
-  }
 
   // ────────────────────────── Simple Readings ──────────────────────────
 
