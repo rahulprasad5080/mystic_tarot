@@ -16,6 +16,8 @@ import 'presentation/screens/profile_screen.dart';
 import 'presentation/screens/login_screen.dart';
 import 'presentation/screens/daily_tarot_screen.dart';
 import 'presentation/screens/horoscope_screen.dart';
+import 'state/providers/connectivity_provider.dart';
+import 'presentation/widgets/no_internet_widget.dart';
 import 'presentation/widgets/divine_loading_widget.dart';
 
 class MysticTarotApp extends ConsumerWidget {
@@ -28,6 +30,7 @@ class MysticTarotApp extends ConsumerWidget {
     final authService = ref.watch(authServiceProvider);
     final authState = ref.watch(authStateProvider);
     final currentUser = authService.currentUser;
+    final networkStatus = ref.watch(networkStatusProvider);
 
     final String initialRoute = isFirstLaunch
         ? '/language'
@@ -36,7 +39,7 @@ class MysticTarotApp extends ConsumerWidget {
             : authState.when(
                 data: (user) => user != null ? '/home' : '/login',
                 loading: () => '/home', // default to home while checking if token exists
-                error: (_, __) => '/login',
+                error: (_, st) => '/login',
               ));
 
     return MaterialApp(
@@ -52,6 +55,13 @@ class MysticTarotApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       initialRoute: initialRoute,
+      builder: (context, child) {
+        final isOnline = networkStatus.valueOrNull ?? true;
+        if (!isOnline) {
+          return const NoInternetWidget();
+        }
+        return child ?? const SizedBox.shrink();
+      },
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/login':
