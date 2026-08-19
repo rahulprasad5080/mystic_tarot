@@ -7,6 +7,7 @@ import '../../core/theme/text_styles.dart';
 import '../../core/l10n/generated/app_localizations.dart';
 import '../widgets/mystical_background.dart';
 import '../widgets/gradient_header.dart';
+import '../widgets/native_ad_widget.dart';
 
 /// Card selection screen for readings that require a card_image (1-22).
 /// Displays a grid of 22 Major Arcana cards with 3D perspective flip animations
@@ -209,6 +210,12 @@ class _CardSelectScreenState extends State<CardSelectScreen>
                           );
                         },
                       ),
+                    ),
+
+                    // Native Ad Unit placed between reading selection area and button
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: NativeAdWidget(),
                     ),
 
                     // Reveal Reading Button

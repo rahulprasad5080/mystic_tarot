@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/reading_types.dart';
+import '../widgets/native_ad_widget.dart';
 
 /// Screen for entering user details (question, name, DOB, gender, sign)
 /// before running a Tarot reading, matching the exact UI mockup design.
@@ -430,7 +431,12 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+
+                    // Native Ad Unit matching app template
+                    const NativeAdWidget(),
+
+                    const SizedBox(height: 16),
 
                     // Form White Card Container
                     Container(

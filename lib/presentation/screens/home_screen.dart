@@ -5,6 +5,7 @@ import '../../core/constants/reading_types.dart';
 import '../../core/l10n/generated/app_localizations.dart';
 import '../../state/providers/auth_provider.dart';
 import '../../data/services/ad_service.dart';
+import '../widgets/native_ad_widget.dart';
 
 /// Main home screen matching the exact design of the Divine Readings app mockup.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -262,6 +263,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ],
                         ),
                       ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Native Ad Unit
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: NativeAdWidget(),
                     ),
 
                     const SizedBox(height: 24),
