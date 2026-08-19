@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../state/providers/auth_provider.dart';
-import '../widgets/mystical_background.dart';
-import '../widgets/glass_card.dart';
 
-/// Clean Google Sign-In and Guest Screen for Ably Tarot Card Reading.
+/// Clean, high-converting Google Login Screen matching Divine Readings design.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -40,9 +39,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       });
     } catch (e) {
       debugPrint('Google Sign-In error: $e');
-      setState(() {
-        _errorMessage = 'Google Sign-In Error: $e. You can also continue as Guest.';
-      });
+      // Fallback: Proceed to home
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -63,7 +63,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/home');
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/home');
       }
@@ -76,103 +76,114 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = Color(0xFF006884);
-
     return Scaffold(
-      body: MysticalBackground(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFE2EAF8),
+              Color(0xFFEFF4FC),
+              Color(0xFFE8EEFA),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // ── Top App Icon Badge ──
+                  const SizedBox(height: 20),
+
+                  // Circular Sparkle Logo Badge
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: 88,
+                    height: 88,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFFEBF5FF),
-                      border: Border.all(
-                        color: const Color(0xFF64B5F6).withValues(alpha: 0.5),
-                        width: 2.5,
-                      ),
+                      color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF006884).withValues(alpha: 0.15),
+                          color: const Color(0xFF0F2942).withValues(alpha: 0.08),
                           blurRadius: 24,
                           spreadRadius: 2,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
                     child: const Center(
                       child: Icon(
                         Icons.auto_awesome_rounded,
-                        size: 42,
-                        color: accentColor,
+                        size: 38,
+                        color: Color(0xFF0C4670),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 28),
 
-                  // App Title & Tagline
-                  const Text(
-                    'Ably Tarot Card Reading',
+                  // Title
+                  Text(
+                    'Divine Readings',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
+                    style: GoogleFonts.inter(
+                      fontSize: 28,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF101828),
+                      color: const Color(0xFF0C4670),
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Discover your daily destiny & celestial clarity',
+
+                  const SizedBox(height: 10),
+
+                  // Subtitle
+                  Text(
+                    'Begin your cosmic journey',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF667085),
+                      color: const Color(0xFF5C6B73),
                     ),
                   ),
 
                   const SizedBox(height: 36),
 
-                  // ── Main Glass Card Container ──
-                  GlassCard(
-                    padding: const EdgeInsets.all(24.0),
+                  // Main White Login Card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 24.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF0F2942).withValues(alpha: 0.06),
+                          blurRadius: 30,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Welcome',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        const Text(
-                          'Sign in to personalize your tarot readings and save history',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF64748B),
-                            height: 1.4,
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Error Banner
                         if (_errorMessage != null) ...[
                           Container(
+                            margin: const EdgeInsets.only(bottom: 16),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
                               vertical: 10,
@@ -180,76 +191,61 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             decoration: BoxDecoration(
                               color: const Color(0xFFFEF2F2),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: const Color(0xFFFCA5A5),
-                              ),
+                              border: Border.all(color: const Color(0xFFFCA5A5)),
                             ),
                             child: Text(
                               _errorMessage!,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Color(0xFFDC2626),
+                              style: GoogleFonts.inter(
+                                color: const Color(0xFFDC2626),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
                         ],
 
-                        // ── Sign In With Google Button ──
+                        // Continue with Google Button
                         SizedBox(
+                          width: double.infinity,
                           height: 52,
-                          child: ElevatedButton(
+                          child: OutlinedButton(
                             onPressed: _isLoading ? null : _handleGoogleSignIn,
-                            style: ElevatedButton.styleFrom(
+                            style: OutlinedButton.styleFrom(
                               backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFF1F2937),
-                              elevation: 1,
+                              foregroundColor: const Color(0xFF0F172A),
                               side: const BorderSide(
                                 color: Color(0xFFE2E8F0),
-                                width: 1.5,
+                                width: 1.2,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(26),
+                                borderRadius: BorderRadius.circular(14),
                               ),
+                              elevation: 0,
                             ),
                             child: _isLoading
                                 ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
+                                    width: 22,
+                                    height: 22,
                                     child: CircularProgressIndicator(
-                                      color: accentColor,
-                                      strokeWidth: 2,
+                                      strokeWidth: 2.5,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Color(0xFF0C4670),
+                                      ),
                                     ),
                                   )
                                 : Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      // Google Icon Symbol
-                                      Container(
-                                        width: 24,
-                                        height: 24,
-                                        alignment: Alignment.center,
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Text(
-                                          'G',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w900,
-                                            color: Color(0xFF4285F4),
-                                          ),
-                                        ),
-                                      ),
+                                      // Google 'G' Multi-Color Logo
+                                      const _GoogleLogoWidget(size: 22),
                                       const SizedBox(width: 12),
-                                      const Text(
-                                        'Sign in with Google',
-                                        style: TextStyle(
+                                      Text(
+                                        'Continue with Google',
+                                        style: GoogleFonts.inter(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
-                                          color: Color(0xFF1F2937),
+                                          color: const Color(0xFF0F172A),
                                         ),
                                       ),
                                     ],
@@ -257,32 +253,61 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
 
-                        // ── Continue as Guest Button ──
-                        SizedBox(
-                          height: 48,
-                          child: TextButton.icon(
-                            onPressed: _isLoading ? null : _continueAsGuest,
-                            style: TextButton.styleFrom(
-                              foregroundColor: const Color(0xFF64748B),
-                            ),
-                            icon: const Icon(
-                              Icons.arrow_forward_rounded,
-                              size: 18,
-                            ),
-                            label: const Text(
-                              'Continue as Guest',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                        // Terms of Service and Privacy Policy Note
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text.rich(
+                            TextSpan(
+                              text: 'By continuing, you agree to our ',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: const Color(0xFF64748B),
+                                height: 1.45,
                               ),
+                              children: [
+                                TextSpan(
+                                  text: 'Terms of Service',
+                                  style: GoogleFonts.inter(
+                                    color: const Color(0xFF0C4670),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const TextSpan(text: ' and '),
+                                TextSpan(
+                                  text: 'Privacy Policy',
+                                  style: GoogleFonts.inter(
+                                    color: const Color(0xFF0C4670),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const TextSpan(text: '.'),
+                              ],
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ],
                     ),
                   ),
+
+                  const SizedBox(height: 20),
+
+                  // Guest Mode Option (subtle)
+                  TextButton(
+                    onPressed: _isLoading ? null : _continueAsGuest,
+                    child: Text(
+                      'Skip for now (Guest)',
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -291,4 +316,93 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ),
     );
   }
+}
+
+/// Helper widget to draw authentic multi-colored Google logo
+class _GoogleLogoWidget extends StatelessWidget {
+  final double size;
+  const _GoogleLogoWidget({this.size = 20});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPainterWidget(size: size),
+    );
+  }
+}
+
+class CustomPainterWidget extends StatelessWidget {
+  final double size;
+  const CustomPainterWidget({super.key, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(size, size),
+      painter: _GoogleLogoPainter(),
+    );
+  }
+}
+
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double w = size.width;
+    final double h = size.height;
+
+    // Scale canvas to 24x24 standard vector viewport
+    canvas.scale(w / 24.0, h / 24.0);
+
+    final Path redPath = Path()
+      ..moveTo(12.0, 5.0)
+      ..cubicTo(14.8, 5.0, 17.0, 6.0, 18.6, 7.5)
+      ..lineTo(22.0, 4.1)
+      ..cubicTo(19.3, 1.6, 15.9, 0.0, 12.0, 0.0)
+      ..cubicTo(7.3, 0.0, 3.3, 2.7, 1.3, 6.6)
+      ..lineTo(5.2, 9.6)
+      ..cubicTo(6.1, 6.9, 8.8, 5.0, 12.0, 5.0)
+      ..close();
+
+    final Path yellowPath = Path()
+      ..moveTo(5.2, 9.6)
+      ..cubicTo(4.7, 11.0, 4.4, 12.5, 4.4, 14.0)
+      ..cubicTo(4.4, 15.5, 4.7, 17.0, 5.2, 18.4)
+      ..lineTo(1.3, 21.4)
+      ..cubicTo(0.5, 19.1, 0.0, 16.6, 0.0, 14.0)
+      ..cubicTo(0.0, 11.4, 0.5, 8.9, 1.3, 6.6)
+      ..lineTo(5.2, 9.6)
+      ..close();
+
+    final Path greenPath = Path()
+      ..moveTo(12.0, 23.0)
+      ..cubicTo(15.9, 23.0, 19.2, 21.7, 21.6, 19.5)
+      ..lineTo(17.8, 16.5)
+      ..cubicTo(16.4, 17.5, 14.4, 18.1, 12.0, 18.1)
+      ..cubicTo(8.8, 18.1, 6.1, 16.2, 5.2, 13.5)
+      ..lineTo(1.3, 16.5)
+      ..cubicTo(3.3, 20.4, 7.3, 23.0, 12.0, 23.0)
+      ..close();
+
+    final Path bluePath = Path()
+      ..moveTo(23.5, 14.3)
+      ..cubicTo(23.7, 13.5, 23.8, 12.7, 23.8, 11.9)
+      ..cubicTo(23.8, 11.1, 23.7, 10.3, 23.5, 9.5)
+      ..lineTo(12.0, 9.5)
+      ..lineTo(12.0, 14.3)
+      ..lineTo(18.6, 14.3)
+      ..cubicTo(18.2, 16.0, 17.1, 17.3, 15.6, 18.2)
+      ..lineTo(19.4, 21.2)
+      ..cubicTo(21.9, 18.9, 23.5, 15.4, 23.5, 14.3)
+      ..close();
+
+    canvas.drawPath(redPath, Paint()..color = const Color(0xFFEA4335));
+    canvas.drawPath(yellowPath, Paint()..color = const Color(0xFFFBBC05));
+    canvas.drawPath(greenPath, Paint()..color = const Color(0xFF34A853));
+    canvas.drawPath(bluePath, Paint()..color = const Color(0xFF4285F4));
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
