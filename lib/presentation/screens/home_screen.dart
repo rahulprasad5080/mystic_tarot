@@ -21,12 +21,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     AdService.instance.showInterstitialAd(
       onAdDismissed: () {
         if (!mounted) return;
-        if (reading.category == ReadingCategory.horoscope ||
-            reading.inputType == ReadingInputType.signSelect) {
-          Navigator.of(context).pushNamed('/horoscope');
-        } else if (reading.id == 'daily_tarot') {
-          Navigator.of(context).pushNamed('/daily-tarot');
-        } else if (reading.inputType == ReadingInputType.twoSigns) {
+        if (reading.inputType == ReadingInputType.twoSigns) {
           Navigator.of(context).pushNamed(
             '/compatibility-input',
             arguments: reading,
