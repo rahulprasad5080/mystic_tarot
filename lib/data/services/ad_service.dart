@@ -67,4 +67,23 @@ class AdService {
       onAdDismissed();
     }
   }
+
+  /// Create Native Video Ad instance with test Ad Unit ID.
+  NativeAd createNativeVideoAd({
+    required String factoryId,
+    required NativeAdListener listener,
+  }) {
+    return NativeAd(
+      adUnitId: AdConstants.nativeAdUnitId,
+      factoryId: factoryId,
+      request: const AdRequest(),
+      nativeAdOptions: NativeAdOptions(
+        videoOptions: VideoOptions(
+          startMuted: true,
+          clickToExpandRequested: true,
+        ),
+      ),
+      listener: listener,
+    );
+  }
 }
