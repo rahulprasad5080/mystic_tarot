@@ -18,7 +18,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   String? _errorMessage;
   late AnimationController _animController;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _rotationAnimation;
 
   @override
   void initState() {
@@ -29,10 +28,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     )..repeat(reverse: true);
 
     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
-    );
-
-    _rotationAnimation = Tween<double>(begin: -0.06, end: 0.06).animate(
       CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
     );
   }
@@ -159,16 +154,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                               ),
                             ],
                           ),
-                          child: Center(
-                            child: Transform.rotate(
-                              angle: _rotationAnimation.value,
-                              child: Icon(
-                                Icons.auto_awesome_rounded,
-                                size: 38,
-                                color: Color.lerp(
-                                  const Color(0xFF0C4670),
-                                  const Color(0xFF0284C7),
-                                  val,
+                          child: ClipOval(
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: ClipOval(
+                                child: Image.asset(
+                                  'assets/images/logo.jpeg',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(
+                                    Icons.auto_awesome_rounded,
+                                    size: 38,
+                                    color: Color(0xFF0C4670),
+                                  ),
                                 ),
                               ),
                             ),
