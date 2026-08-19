@@ -11,15 +11,12 @@ import '../../data/models/love_compatibility_result.dart';
 import '../../data/models/coffee_cup_result.dart';
 import '../../data/models/special_results.dart';
 import '../../state/providers/reading_provider.dart';
-import '../widgets/mystical_background.dart';
-import '../widgets/gradient_header.dart';
-import '../widgets/glass_card.dart';
 import '../widgets/loading_shimmer.dart';
 import '../widgets/error_retry_widget.dart';
 import '../widgets/native_ad_widget.dart';
 
 /// Generic reading detail screen — displays results from any reading type.
-/// Accepts a ReadingType and optional params (cardImage, signs).
+/// Uses a clean celestial theme matching the target design (with NO profile icon).
 class ReadingDetailScreen extends ConsumerWidget {
   final ReadingType readingType;
   final String? cardImage;
@@ -47,16 +44,25 @@ class ReadingDetailScreen extends ConsumerWidget {
     final readingAsync = ref.watch(readingProvider(params));
 
     return Scaffold(
-      body: MysticalBackground(
+      backgroundColor: const Color(0xFFF4F8FC),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFF0F7FF),
+              Color(0xFFF8FAFC),
+              Color(0xFFEBF5FE),
+            ],
+          ),
+        ),
         child: Column(
           children: [
-            // Gradient header
-            GradientHeader(
-              title: _getReadingTitle(l10n),
-              onBack: () => Navigator.of(context).pop(),
-            ),
+            // Clean Header Bar (Back button + Title + No Profile Icon)
+            _buildAppBar(context, _getReadingTitle(l10n)),
 
-            // Content
+            // Main Content Area
             Expanded(
               child: SafeArea(
                 top: false,
@@ -83,6 +89,52 @@ class ReadingDetailScreen extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// App bar with back button on left, centered title, and EMPTY right side (NO profile icon).
+  Widget _buildAppBar(BuildContext context, String title) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: const Color(0xFFE2E8F0).withValues(alpha: 0.7),
+            width: 1,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                color: const Color(0xFF0E697E),
+                iconSize: 24,
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Color(0xFF0E697E),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.2,
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              // NO profile icon on the right! (User explicitly requested omitting profile icon)
+              const SizedBox(width: 48),
+            ],
+          ),
         ),
       ),
     );
@@ -138,105 +190,335 @@ class ReadingDetailScreen extends ConsumerWidget {
 
   Widget _buildReadingResult(BuildContext context, ReadingResult data) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
         children: [
-          // Card image
-          if (data.displayImage != null)
-            _buildCardImage(data.displayImage!, height: 280),
-
-          const SizedBox(height: 20),
-
-          // Card name + Yes/No badge
-          if (data.card != null)
-            GlassCard(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    readingType.icon,
-                    color: readingType.accentColor,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 10),
-                  Flexible(
-                    child: Text(
-                      data.card!,
-                      style: AppTextStyles.headlineMedium.copyWith(
-                        color: AppColors.accentBlue,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  if (data.hasYesNo) ...[
-                    const SizedBox(width: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: data.yesNo == 'YES'
-                            ? AppColors.success.withValues(alpha: 0.2)
-                            : AppColors.error.withValues(alpha: 0.2),
-                        border: Border.all(
-                          color: data.yesNo == 'YES'
-                              ? AppColors.success
-                              : AppColors.error,
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        data.yesNo!,
-                        style: AppTextStyles.labelLarge.copyWith(
-                          color: data.yesNo == 'YES'
-                              ? AppColors.success
-                              : AppColors.error,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
+          // 1. Header Subtitle ("The Stars Have Spoken" or Card title)
+          if (data.hasYesNo) ...[
+            const Text(
+              'The Stars Have Spoken',
+              style: TextStyle(
+                color: Color(0xFF334155),
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
               ),
             ),
-
-          if (data.category != null) ...[
-            const SizedBox(height: 8),
-            Text(data.category!, style: AppTextStyles.bodySmall),
+            const SizedBox(height: 20),
+          ] else if (data.card != null) ...[
+            Text(
+              data.card!,
+              style: const TextStyle(
+                color: Color(0xFF0E697E),
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            if (data.category != null)
+              Text(
+                data.category!,
+                style: const TextStyle(
+                  color: Color(0xFF64748B),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            const SizedBox(height: 20),
           ],
 
-          const SizedBox(height: 12),
+          // 2. Card Presentation with Glow and Sparkle Icon
+          if (data.displayImage != null) ...[
+            _buildCardDisplay(data.displayImage!),
+            const SizedBox(height: 28),
+          ] else ...[
+            _buildCardFallbackDisplay(),
+            const SizedBox(height: 28),
+          ],
 
-          // Native Ad placed between card area and reading
+          // 3. Native Ad Widget (Placed above text)
           const NativeAdWidget(),
+          const SizedBox(height: 20),
 
-          const SizedBox(height: 12),
-
-          // Reading text
+          // 4. Divine Insight Box (Text placed below ad)
           if (data.displayText.isNotEmpty)
-            GlassCard(
-              padding: const EdgeInsets.all(20),
-              child: Text(
-                data.displayText,
-                style: AppTextStyles.bodyLarge.copyWith(height: 1.8),
-              ),
+            _buildDivineInsightCard(
+              title: 'Divine Insight',
+              content: data.displayText,
             ),
 
-          // Additional sections (for daily tarot)
+          // Additional Sections (Love, Finance, Career)
           if (data.love != null && data.love!.isNotEmpty) ...[
             const SizedBox(height: 16),
-            _buildSection('Love', data.love!, Icons.favorite_rounded),
+            _buildDivineInsightCard(
+              title: 'Love Reading',
+              content: data.love!,
+              icon: Icons.favorite_border_rounded,
+            ),
           ],
           if (data.finance != null && data.finance!.isNotEmpty) ...[
             const SizedBox(height: 16),
-            _buildSection(
-              'Finance',
-              data.finance!,
-              Icons.account_balance_rounded,
+            _buildDivineInsightCard(
+              title: 'Financial Insight',
+              content: data.finance!,
+              icon: Icons.account_balance_outlined,
             ),
           ],
+          if (data.career != null && data.career!.isNotEmpty && data.displayText != data.career) ...[
+            const SizedBox(height: 16),
+            _buildDivineInsightCard(
+              title: 'Career Forecast',
+              content: data.career!,
+              icon: Icons.work_outline_rounded,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// Builds the card container with soft cyan glow and bottom-right sparkle badge overlay.
+  Widget _buildCardDisplay(String url) {
+    return Center(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Outer Card Frame with Soft Blue Glow & Shadow
+          Container(
+            width: 250,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: const Color(0xFFE2E8F0).withValues(alpha: 0.9),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
+                  blurRadius: 36,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 10),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: CachedNetworkImage(
+                imageUrl: url,
+                height: 350,
+                width: 226,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  height: 350,
+                  color: const Color(0xFFF1F5F9),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF38BDF8),
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => _buildCardFallbackInner(),
+              ),
+            ),
+          ),
+
+          // Bottom-Right Sparkle Overlay Icon (matches reference design ✨)
+          Positioned(
+            right: -6,
+            bottom: -6,
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF38BDF8).withValues(alpha: 0.4),
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.auto_awesome,
+                color: Color(0xFF38BDF8),
+                size: 20,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCardFallbackDisplay() {
+    return Center(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 250,
+            height: 350,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: const Color(0xFFE2E8F0),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF38BDF8).withValues(alpha: 0.3),
+                  blurRadius: 32,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: _buildCardFallbackInner(),
+            ),
+          ),
+          Positioned(
+            right: -6,
+            bottom: -6,
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF38BDF8).withValues(alpha: 0.4),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.auto_awesome,
+                color: Color(0xFF38BDF8),
+                size: 20,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCardFallbackInner() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFE0F2FE), Color(0xFFF0F9FF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFF0EA5E9).withValues(alpha: 0.15),
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: Color(0xFF0EA5E9),
+              size: 36,
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'DIVINE TAROT',
+            style: TextStyle(
+              color: Color(0xFF0E697E),
+              letterSpacing: 2,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds the Divine Insight card box (white background, border, header icon & title, centered text).
+  Widget _buildDivineInsightCard({
+    required String title,
+    required String content,
+    IconData icon = Icons.brightness_7_outlined,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: const Color(0xFF0EA5E9).withValues(alpha: 0.04),
+            blurRadius: 20,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Title Row with Icon (Dark Teal color matching design)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: const Color(0xFF0E697E),
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Color(0xFF0E697E),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Content Paragraph (Centered text with soft line height)
+          Text(
+            content,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Color(0xFF475569),
+              fontSize: 15,
+              height: 1.65,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
         ],
       ),
     );
@@ -246,22 +528,23 @@ class ReadingDetailScreen extends ConsumerWidget {
 
   Widget _buildDualCardResult(BuildContext context, DualCardResult data) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          // Card images side by side
           Row(
             children: [
               if (data.card1Image != null)
                 Expanded(
                   child: Column(
                     children: [
-                      _buildCardImage(data.card1Image!, height: 200),
+                      _buildCardDisplay(data.card1Image!),
                       const SizedBox(height: 8),
                       Text(
                         data.card1 ?? '',
-                        style: AppTextStyles.cardTitle.copyWith(
-                          color: AppColors.accentBlue,
+                        style: const TextStyle(
+                          color: Color(0xFF0E697E),
+                          fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -273,12 +556,13 @@ class ReadingDetailScreen extends ConsumerWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      _buildCardImage(data.card2Image!, height: 200),
+                      _buildCardDisplay(data.card2Image!),
                       const SizedBox(height: 8),
                       Text(
                         data.card2 ?? '',
-                        style: AppTextStyles.cardTitle.copyWith(
-                          color: AppColors.accentBlue,
+                        style: const TextStyle(
+                          color: Color(0xFF0E697E),
+                          fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -289,14 +573,10 @@ class ReadingDetailScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
 
-          // Text content
           if (data.displayText.isNotEmpty)
-            GlassCard(
-              padding: const EdgeInsets.all(20),
-              child: Text(
-                data.displayText,
-                style: AppTextStyles.bodyLarge.copyWith(height: 1.8),
-              ),
+            _buildDivineInsightCard(
+              title: 'Divine Insight',
+              content: data.displayText,
             ),
         ],
       ),
@@ -310,19 +590,26 @@ class ReadingDetailScreen extends ConsumerWidget {
     LoveCompatibilityResult data,
   ) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          // Signs header
-          GlassCard(
+          Container(
             padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   data.sign1 ?? '',
-                  style: AppTextStyles.headlineMedium.copyWith(
-                    color: AppColors.accentBlue,
+                  style: const TextStyle(
+                    color: Color(0xFF0E697E),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 const Padding(
@@ -335,8 +622,10 @@ class ReadingDetailScreen extends ConsumerWidget {
                 ),
                 Text(
                   data.sign2 ?? '',
-                  style: AppTextStyles.headlineMedium.copyWith(
-                    color: AppColors.accentBlue,
+                  style: const TextStyle(
+                    color: Color(0xFF0E697E),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -344,10 +633,14 @@ class ReadingDetailScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
 
-          // Scores
           if (data.score != null)
-            GlassCard(
+            Container(
               padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -363,30 +656,34 @@ class ReadingDetailScreen extends ConsumerWidget {
           const SizedBox(height: 16),
 
           if (data.overallCompatibility != null)
-            _buildSection(
-              'Overview',
-              data.overallCompatibility!,
-              Icons.auto_awesome_rounded,
+            _buildDivineInsightCard(
+              title: 'Overview',
+              content: data.overallCompatibility!,
+              icon: Icons.auto_awesome_rounded,
             ),
           if (data.positiveAspects != null) ...[
             const SizedBox(height: 16),
-            _buildSection(
-              'Positive Aspects',
-              data.positiveAspects!,
-              Icons.thumb_up_rounded,
+            _buildDivineInsightCard(
+              title: 'Positive Aspects',
+              content: data.positiveAspects!,
+              icon: Icons.thumb_up_rounded,
             ),
           ],
           if (data.negativeAspects != null) ...[
             const SizedBox(height: 16),
-            _buildSection(
-              'Challenges',
-              data.negativeAspects!,
-              Icons.warning_rounded,
+            _buildDivineInsightCard(
+              title: 'Challenges',
+              content: data.negativeAspects!,
+              icon: Icons.warning_rounded,
             ),
           ],
           if (data.idealDate != null) ...[
             const SizedBox(height: 16),
-            _buildSection('Ideal Date', data.idealDate!, Icons.event_rounded),
+            _buildDivineInsightCard(
+              title: 'Ideal Date',
+              content: data.idealDate!,
+              icon: Icons.event_rounded,
+            ),
           ],
         ],
       ),
@@ -397,6 +694,7 @@ class ReadingDetailScreen extends ConsumerWidget {
 
   Widget _buildCoffeeCupResult(BuildContext context, CoffeeCupResult data) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
@@ -437,36 +735,44 @@ class ReadingDetailScreen extends ConsumerWidget {
 
   Widget _buildTriangleResult(BuildContext context, LoveTriangleResult data) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          // 3 cards
           Row(
             children: [
               if (data.card1Image != null)
-                Expanded(child: _buildCardImage(data.card1Image!, height: 150)),
+                Expanded(child: _buildCardDisplay(data.card1Image!)),
               const SizedBox(width: 8),
               if (data.card2Image != null)
-                Expanded(child: _buildCardImage(data.card2Image!, height: 150)),
+                Expanded(child: _buildCardDisplay(data.card2Image!)),
               const SizedBox(width: 8),
               if (data.card3Image != null)
-                Expanded(child: _buildCardImage(data.card3Image!, height: 150)),
+                Expanded(child: _buildCardDisplay(data.card3Image!)),
             ],
           ),
           const SizedBox(height: 20),
 
           if (data.your != null)
-            _buildSection('Your Perspective', data.your!, Icons.person_rounded),
+            _buildDivineInsightCard(
+              title: 'Your Perspective',
+              content: data.your!,
+              icon: Icons.person_rounded,
+            ),
           if (data.lover1 != null) ...[
             const SizedBox(height: 16),
-            _buildSection('First Lover', data.lover1!, Icons.favorite_rounded),
+            _buildDivineInsightCard(
+              title: 'First Lover',
+              content: data.lover1!,
+              icon: Icons.favorite_rounded,
+            ),
           ],
           if (data.lover2 != null) ...[
             const SizedBox(height: 16),
-            _buildSection(
-              'Second Lover',
-              data.lover2!,
-              Icons.favorite_border_rounded,
+            _buildDivineInsightCard(
+              title: 'Second Lover',
+              content: data.lover2!,
+              icon: Icons.favorite_border_rounded,
             ),
           ],
         ],
@@ -483,21 +789,33 @@ class ReadingDetailScreen extends ConsumerWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: GlassCard(
+        child: Container(
           padding: const EdgeInsets.all(32),
-          borderColor: AppColors.accentBlue.withValues(alpha: 0.4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF38BDF8).withValues(alpha: 0.15),
+                blurRadius: 20,
+              ),
+            ],
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
                 Icons.cookie_rounded,
-                color: AppColors.accentBlue,
+                color: Color(0xFF0E697E),
                 size: 48,
               ),
               const SizedBox(height: 24),
               Text(
                 data.result ?? '',
-                style: AppTextStyles.bodyLarge.copyWith(
+                style: const TextStyle(
+                  color: Color(0xFF334155),
+                  fontSize: 16,
                   height: 1.8,
                   fontStyle: FontStyle.italic,
                 ),
@@ -510,127 +828,25 @@ class ReadingDetailScreen extends ConsumerWidget {
     );
   }
 
-  // ─────────── Helpers ───────────
-
-  Widget _buildCardImage(String url, {required double height}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: CachedNetworkImage(
-        imageUrl: url,
-        height: height,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Container(
-          height: height,
-          width: height * 0.65,
-          decoration: BoxDecoration(
-            color: AppColors.backgroundCardLight,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppColors.accentBlue.withValues(alpha: 0.3),
-              width: 1,
-            ),
-          ),
-          child: const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.accentBlue,
-              strokeWidth: 2,
-            ),
-          ),
-        ),
-        errorWidget: (context, url, error) => Container(
-          height: height,
-          width: height * 0.65,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFBAE6FD), Color(0xFFE0F2FE)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppColors.accentBlue.withValues(alpha: 0.6),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.accentBlue.withValues(alpha: 0.15),
-                blurRadius: 12,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.accentBlue.withValues(alpha: 0.15),
-                  border: Border.all(
-                    color: AppColors.accentBlue.withValues(alpha: 0.4),
-                  ),
-                ),
-                child: const Icon(
-                  Icons.auto_awesome_rounded,
-                  color: AppColors.accentBlue,
-                  size: 32,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'ABLY TAROT CARD READING',
-                style: AppTextStyles.labelSmall.copyWith(
-                  color: AppColors.accentBlue,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSection(String title, String content, IconData icon) {
-    return GlassCard(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: AppColors.accentBlue, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: AppTextStyles.headlineSmall.copyWith(
-                  color: AppColors.accentBlue,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(content, style: AppTextStyles.bodyMedium.copyWith(height: 1.7)),
-        ],
-      ),
-    );
-  }
-
   Widget _buildScore(String label, String value) {
     return Column(
       children: [
         Text(
           value,
-          style: AppTextStyles.displaySmall.copyWith(
-            color: AppColors.accentBlue,
+          style: const TextStyle(
+            color: Color(0xFF38BDF8),
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 4),
-        Text(label, style: AppTextStyles.labelSmall),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Color(0xFF64748B),
+            fontSize: 12,
+          ),
+        ),
       ],
     );
   }
@@ -642,19 +858,26 @@ class ReadingDetailScreen extends ConsumerWidget {
     String? imageUrl,
     IconData icon,
   ) {
-    return GlassCard(
+    return Container(
       padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: AppColors.accentBlue, size: 18),
+              Icon(icon, color: const Color(0xFF0E697E), size: 18),
               const SizedBox(width: 8),
               Text(
                 timeframe,
-                style: AppTextStyles.labelMedium.copyWith(
-                  color: AppColors.textSecondary,
+                style: const TextStyle(
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
                 ),
               ),
             ],
@@ -682,14 +905,20 @@ class ReadingDetailScreen extends ConsumerWidget {
                   children: [
                     Text(
                       title,
-                      style: AppTextStyles.headlineSmall.copyWith(
-                        color: AppColors.accentBlue,
+                      style: const TextStyle(
+                        color: Color(0xFF0E697E),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       content,
-                      style: AppTextStyles.bodyMedium.copyWith(height: 1.7),
+                      style: const TextStyle(
+                        color: Color(0xFF475569),
+                        fontSize: 14,
+                        height: 1.6,
+                      ),
                     ),
                   ],
                 ),
@@ -701,3 +930,4 @@ class ReadingDetailScreen extends ConsumerWidget {
     );
   }
 }
+
