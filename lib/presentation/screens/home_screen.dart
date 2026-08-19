@@ -41,38 +41,65 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  /// Map clean, proper Title Case names for each reading type
+  /// Ordered list of exactly 20 readings requested by client
+  static const List<String> _clientReadingOrder = [
+    'yes_or_no_tarot',
+    'in_depth_love',
+    'divine_angel',
+    'daily_tarot',
+    'dream_come_true',
+    'fortune_cookie',
+    'past_lives_connection',
+    'flirt_love',
+    'erotic_love',
+    'egyptian_prediction',
+    'ex_flame',
+    'made_for_each_other',
+    'power_life',
+    'know_your_friend',
+    'career_daily',
+    'heartbreak',
+    'love_triangle',
+    'coffee_cup',
+    'divine_magic',
+    'love_compatibility',
+  ];
+
+  /// Get list of exactly the 20 reading types in exact order requested by client
+  List<ReadingType> get _homeReadings {
+    final list = <ReadingType>[];
+    for (final id in _clientReadingOrder) {
+      final item = ReadingTypes.byId(id);
+      if (item != null) list.add(item);
+    }
+    return list;
+  }
+
+  /// Map exact client names for each of the 20 reading types
   String _getReadingName(AppLocalizations? l10n, ReadingType reading) {
     final map = <String, String>{
-      'yes_or_no_tarot': 'Yes or No Tarot',
+      'yes_or_no_tarot': 'Yes OR No Tarot',
       'in_depth_love': 'In-Depth Love Reading',
       'divine_angel': 'Divine Angel Reading',
-      'daily_tarot': 'Daily Tarot Reading',
+      'daily_tarot': 'Daily Tarot',
       'dream_come_true': 'Dream Come True Reading',
-      'fortune_cookie': 'Fortune Cookie Reading',
-      'past_lives_connection': 'Past Lives Connection Reading',
+      'fortune_cookie': 'Which Animal Are You Reading',
+      'past_lives_connection': 'Past-Present-Future Reading',
       'flirt_love': 'Flirt Love Reading',
       'erotic_love': 'Erotic Love Reading',
-      'egyptian_prediction': 'Egyptian Prediction Reading',
+      'egyptian_prediction': 'Egyptian Prediction',
       'ex_flame': 'Ex-Flame Reading',
-      'made_for_each_other': 'Made for Each Other Reading',
+      'made_for_each_other': 'Made For Each Other Or Not Reading',
       'power_life': 'Power Life Reading',
       'know_your_friend': 'Know Your Friend Reading',
       'career_daily': 'Career Daily Reading',
       'heartbreak': 'Heartbreak Reading',
       'love_triangle': 'Love Triangle Reading',
-      'coffee_cup': 'Coffee Cup Reading',
+      'coffee_cup': 'Wisdom Reading',
       'divine_magic': 'Divine Magic Reading',
-      'love_compatibility': 'Love Compatibility Reading',
-      'daily_horoscope': 'Daily Horoscope',
-      'weekly_horoscope': 'Weekly Horoscope',
-      'monthly_horoscope': 'Monthly Horoscope',
-      'yearly_horoscope': 'Yearly Horoscope',
-      'which_animal_are_you': 'Which Animal Are You',
-      'past_present_future': 'Past-Present-Future Reading',
-      'wisdom_reading': 'Wisdom Reading',
+      'love_compatibility': 'Past Lives Connection Reading',
     };
-    return map[reading.id] ?? _toTitleCase(reading.id);
+    return map[reading.id] ?? reading.id;
   }
 
   String _getReadingDesc(AppLocalizations? l10n, ReadingType reading) {
@@ -99,17 +126,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       'love_compatibility': 'Uncover karmic ties & harmony',
     };
     return map[reading.id] ?? '';
-  }
-
-  String _toTitleCase(String text) {
-    if (text.isEmpty) return text;
-    return text
-        .split('_')
-        .map((word) {
-          if (word.isEmpty) return word;
-          return word[0].toUpperCase() + word.substring(1).toLowerCase();
-        })
-        .join(' ');
   }
 
   @override
@@ -312,9 +328,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      itemCount: ReadingTypes.all.length,
+                      itemCount: _homeReadings.length,
                       itemBuilder: (context, index) {
-                        final reading = ReadingTypes.all[index];
+                        final reading = _homeReadings[index];
                         final title = _getReadingName(l10n, reading);
                         final desc = _getReadingDesc(l10n, reading);
 
