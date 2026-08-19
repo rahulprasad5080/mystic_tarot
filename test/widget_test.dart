@@ -16,6 +16,14 @@ void main() {
       }
     });
 
+    test('Should have zero duplicate IDs or endpoints', () {
+      final ids = ReadingTypes.all.map((r) => r.id).toList();
+      final endpoints = ReadingTypes.all.map((r) => r.endpoint).toList();
+
+      expect(ids.length, equals(ids.toSet().length), reason: 'Duplicate ID found in ReadingTypes');
+      expect(endpoints.length, equals(endpoints.toSet().length), reason: 'Duplicate endpoint found in ReadingTypes');
+    });
+
     test('Filter by category returns expected subset', () {
       final tarotReadings = ReadingTypes.byCategory(ReadingCategory.tarot);
       expect(tarotReadings, isNotEmpty);
