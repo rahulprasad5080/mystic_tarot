@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../state/providers/auth_provider.dart';
 
 /// User Profile Detail screen integrated with Firebase Auth state.
@@ -91,13 +92,38 @@ class ProfileScreen extends ConsumerWidget {
                               ),
                             ),
                             child: ClipOval(
-                              child: Icon(
-                                user?.isAnonymous == true
-                                    ? Icons.person_outline
-                                    : Icons.person,
-                                size: 60,
-                                color: Colors.grey.shade600,
-                              ),
+                              child: user?.photoURL != null &&
+                                      user!.photoURL!.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageUrl: user.photoURL!,
+                                      fit: BoxFit.cover,
+                                      width: 100,
+                                      height: 100,
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                        child: SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Color(0xFF006884),
+                                          ),
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(
+                                        Icons.person,
+                                        size: 60,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    )
+                                  : Icon(
+                                      user?.isAnonymous == true
+                                          ? Icons.person_outline
+                                          : Icons.person,
+                                      size: 60,
+                                      color: Colors.grey.shade600,
+                                    ),
                             ),
                           ),
 

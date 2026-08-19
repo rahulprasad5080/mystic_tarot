@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/reading_types.dart';
 import 'core/l10n/generated/app_localizations.dart';
+import 'state/providers/auth_provider.dart';
 import 'state/providers/locale_provider.dart';
 import 'presentation/screens/main_screen.dart';
 import 'presentation/screens/language_selection_screen.dart';
@@ -24,6 +25,15 @@ class MysticTarotApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(localeProvider);
     final isFirstLaunch = ref.watch(isFirstLaunchProvider);
+    final authState = ref.watch(authStateProvider);
+
+    final String initialRoute = isFirstLaunch
+        ? '/language'
+        : (authState.when(
+            data: (user) => user != null ? '/home' : '/login',
+            loading: () => '/login',
+            error: (_, __) => '/login',
+          ));
 
     return MaterialApp(
       title: 'Ably Tarot Card Reading',
@@ -37,7 +47,7 @@ class MysticTarotApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      initialRoute: isFirstLaunch ? '/language' : '/home',
+      initialRoute: initialRoute,
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/login':

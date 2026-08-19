@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-/// Firebase Authentication service wrapping FirebaseAuth API.
+/// Firebase Authentication service wrapping FirebaseAuth & Google Sign-In APIs.
 class AuthService {
   final FirebaseAuth _firebaseAuth;
+  final GoogleSignIn _googleSignIn;
 
-  AuthService({FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  AuthService({FirebaseAuth? firebaseAuth, GoogleSignIn? googleSignIn})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   /// Stream of authentication state changes.
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
@@ -13,36 +16,21 @@ class AuthService {
   /// Get current user instance.
   User? get currentUser => _firebaseAuth.currentUser;
 
-  /// Sign in with email and password.
-  Future<UserCredential> signInWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
+  /// Sign in with Google Account.
+  Future<UserCredential?> signInWithGoogle() async {
     try {
-      return await _firebaseAuth.signInWithEmailAndPassword(
-        email: email.trim(),
-        password: password,
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null; // User cancelled sign in
 
-  /// Register / Sign up with email, password, and optional display name.
-  Future<UserCredential> signUpWithEmailAndPassword({
-    required String email,
-    required String password,
-    String? displayName,
-  }) async {
-    try {
-      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email.trim(),
-        password: password,
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
-      if (displayName != null && displayName.trim().isNotEmpty) {
-        await credential.user?.updateDisplayName(displayName.trim());
-      }
-      return credential;
+
+      return await _firebaseAuth.signInWithCredential(credential);
     } catch (e) {
       rethrow;
     }
@@ -59,6 +47,9 @@ class AuthService {
 
   /// Sign out the current user.
   Future<void> signOut() async {
+    try {
+      await _googleSignIn.signOut();
+    } catch (_) {}
     await _firebaseAuth.signOut();
   }
 }

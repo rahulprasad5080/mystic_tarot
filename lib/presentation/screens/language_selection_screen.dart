@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_constants.dart';
 import '../../state/providers/locale_provider.dart';
+import '../../state/providers/auth_provider.dart';
 
 /// Language selection screen designed exactly as requested.
 class LanguageSelectionScreen extends ConsumerStatefulWidget {
@@ -30,7 +31,12 @@ class _LanguageSelectionScreenState
   Future<void> _confirmSelection() async {
     await ref.read(localeProvider.notifier).setLocale(_selectedCode);
     if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/home');
+      final user = ref.read(currentUserProvider);
+      if (user != null) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      } else {
+        Navigator.of(context).pushReplacementNamed('/login');
+      }
     }
   }
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/constants/reading_types.dart';
 import '../../core/l10n/generated/app_localizations.dart';
+import '../../state/providers/auth_provider.dart';
 
 /// Main home screen matching the exact design of the Divine Readings app mockup.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -90,6 +92,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     const backgroundColor = Color(0xFFF7F7FD);
+    final user = ref.watch(currentUserProvider);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -144,11 +147,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       radius: 18,
                       backgroundColor: const Color(0xFFE0E0E0),
                       child: ClipOval(
-                        child: Icon(
-                          Icons.person,
-                          size: 22,
-                          color: Colors.grey.shade700,
-                        ),
+                        child: user?.photoURL != null && user!.photoURL!.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: user.photoURL!,
+                                width: 36,
+                                height: 36,
+                                fit: BoxFit.cover,
+                                errorWidget: (context, url, error) => Icon(
+                                  Icons.person,
+                                  size: 22,
+                                  color: Colors.grey.shade700,
+                                ),
+                              )
+                            : Icon(
+                                Icons.person,
+                                size: 22,
+                                color: Colors.grey.shade700,
+                              ),
                       ),
                     ),
                   ),

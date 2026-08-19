@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "802504396542",
+    "project_id": "ablytarot",
+    "storage_bucket": "ablytarot.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:802504396542:android:9706b3d376203adeaa5faf",
+        "android_client_info": {
+          "package_name": "com.ably.tarot_card_reading"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2c_ilZG65WzX83zwqpjiW56BqetjJpv4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
