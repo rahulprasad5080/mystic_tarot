@@ -12,9 +12,36 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen>
+    with SingleTickerProviderStateMixin {
   bool _isLoading = false;
   String? _errorMessage;
+  late AnimationController _animController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _rotationAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
+    );
+
+    _rotationAnimation = Tween<double>(begin: -0.06, end: 0.06).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleGoogleSignIn() async {
     setState(() {
@@ -101,42 +128,67 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 children: [
                   const SizedBox(height: 20),
 
-                  // Circular Sparkle Logo Badge
-                  Container(
-                    width: 88,
-                    height: 88,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF0F2942).withValues(alpha: 0.08),
-                          blurRadius: 24,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 8),
+                  // Animated Circular Sparkle Logo Badge
+                  AnimatedBuilder(
+                    animation: _animController,
+                    builder: (context, child) {
+                      final val = _animController.value;
+                      return Transform.scale(
+                        scale: _scaleAnimation.value,
+                        child: Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFF0C4670,
+                                ).withValues(alpha: 0.08 + (val * 0.12)),
+                                blurRadius: 20 + (val * 12),
+                                spreadRadius: 2 + (val * 4),
+                                offset: const Offset(0, 8),
+                              ),
+                              BoxShadow(
+                                color: const Color(
+                                  0xFF38BDF8,
+                                ).withValues(alpha: val * 0.25),
+                                blurRadius: 28,
+                                spreadRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Transform.rotate(
+                              angle: _rotationAnimation.value,
+                              child: Icon(
+                                Icons.auto_awesome_rounded,
+                                size: 38,
+                                color: Color.lerp(
+                                  const Color(0xFF0C4670),
+                                  const Color(0xFF0284C7),
+                                  val,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.auto_awesome_rounded,
-                        size: 38,
-                        color: Color(0xFF0C4670),
-                      ),
-                    ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 28),
 
-                  // Title
+                  // App Name Title
                   Text(
-                    'Divine Readings',
+                    'Ably Tarot Card Reading',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
-                      fontSize: 28,
+                      fontSize: 26,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF0C4670),
-                      letterSpacing: -0.5,
+                      letterSpacing: -0.4,
                     ),
                   ),
 
