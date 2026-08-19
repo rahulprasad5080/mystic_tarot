@@ -41,58 +41,75 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  /// Map localized or fallback names for each reading type
+  /// Map clean, proper Title Case names for each reading type
   String _getReadingName(AppLocalizations? l10n, ReadingType reading) {
-    if (l10n == null) return reading.id;
     final map = <String, String>{
-      'yes_or_no_tarot': 'Yes OR No Tarot',
+      'yes_or_no_tarot': 'Yes or No Tarot',
       'in_depth_love': 'In-Depth Love Reading',
       'divine_angel': 'Divine Angel Reading',
-      'daily_tarot': 'Daily Tarot',
+      'daily_tarot': 'Daily Tarot Reading',
       'dream_come_true': 'Dream Come True Reading',
-      'fortune_cookie': 'Which Animal Are You Reading',
-      'past_lives_connection': 'Past-Present-Future Reading',
+      'fortune_cookie': 'Fortune Cookie Reading',
+      'past_lives_connection': 'Past Lives Connection Reading',
       'flirt_love': 'Flirt Love Reading',
       'erotic_love': 'Erotic Love Reading',
-      'egyptian_prediction': 'Egyptian Prediction',
+      'egyptian_prediction': 'Egyptian Prediction Reading',
       'ex_flame': 'Ex-Flame Reading',
-      'made_for_each_other': 'Made For Each Other Or Not Reading',
+      'made_for_each_other': 'Made for Each Other Reading',
       'power_life': 'Power Life Reading',
       'know_your_friend': 'Know Your Friend Reading',
       'career_daily': 'Career Daily Reading',
       'heartbreak': 'Heartbreak Reading',
       'love_triangle': 'Love Triangle Reading',
-      'coffee_cup': 'Wisdom Reading',
+      'coffee_cup': 'Coffee Cup Reading',
       'divine_magic': 'Divine Magic Reading',
-      'love_compatibility': 'Past Lives Connection Reading',
+      'love_compatibility': 'Love Compatibility Reading',
+      'daily_horoscope': 'Daily Horoscope',
+      'weekly_horoscope': 'Weekly Horoscope',
+      'monthly_horoscope': 'Monthly Horoscope',
+      'yearly_horoscope': 'Yearly Horoscope',
+      'which_animal_are_you': 'Which Animal Are You',
+      'past_present_future': 'Past-Present-Future Reading',
+      'wisdom_reading': 'Wisdom Reading',
     };
-    return map[reading.id] ?? reading.id;
+    return map[reading.id] ?? _toTitleCase(reading.id);
   }
 
   String _getReadingDesc(AppLocalizations? l10n, ReadingType reading) {
     final map = <String, String>{
-      'yes_or_no_tarot': 'Quick answers for immediate...',
-      'in_depth_love': 'Explore the depths of your...',
-      'divine_angel': 'Receive messages from highe...',
-      'daily_tarot': 'Your guidance for the day...',
-      'dream_come_true': 'Manifesting your deepest...',
-      'fortune_cookie': 'Discover your spirit guide...',
-      'past_lives_connection': "Understand your timeline's flow...",
-      'flirt_love': 'Playful insights into new...',
-      'erotic_love': 'Intimate and passionate...',
-      'egyptian_prediction': 'Ancient wisdom for modern life...',
-      'ex_flame': 'Clarity on past relationships...',
-      'made_for_each_other': 'Evaluate your core...',
-      'power_life': 'Unlock your true potential...',
-      'know_your_friend': 'Insights into your platonic...',
-      'career_daily': 'Navigate your professional...',
-      'heartbreak': 'Healing and moving forward...',
-      'love_triangle': 'Untangle complex emotions...',
-      'coffee_cup': 'Deep insights for spiritual...',
-      'divine_magic': 'Tap into mystical energies...',
-      'love_compatibility': 'Uncover karmic ties and...',
+      'yes_or_no_tarot': 'Quick answers for immediate clarity',
+      'in_depth_love': 'Explore the depths of your relationship',
+      'divine_angel': 'Receive guidance from higher realm',
+      'daily_tarot': 'Your guidance for the day ahead',
+      'dream_come_true': 'Manifesting your deepest desires',
+      'fortune_cookie': 'Discover your spirit guidance',
+      'past_lives_connection': "Understand your timeline's flow",
+      'flirt_love': 'Playful insights into new romance',
+      'erotic_love': 'Intimate and passionate energy',
+      'egyptian_prediction': 'Ancient wisdom for modern life',
+      'ex_flame': 'Clarity on past relationships',
+      'made_for_each_other': 'Evaluate core relationship bond',
+      'power_life': 'Unlock your true potential',
+      'know_your_friend': 'Insights into platonic bonds',
+      'career_daily': 'Navigate professional growth',
+      'heartbreak': 'Healing and moving forward',
+      'love_triangle': 'Untangle complex emotions',
+      'coffee_cup': 'Deep insights for spiritual journey',
+      'divine_magic': 'Tap into mystical energies',
+      'love_compatibility': 'Uncover karmic ties & harmony',
     };
     return map[reading.id] ?? '';
+  }
+
+  String _toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text
+        .split('_')
+        .map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 
   @override
