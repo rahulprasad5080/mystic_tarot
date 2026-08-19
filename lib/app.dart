@@ -12,6 +12,7 @@ import 'presentation/screens/reading_detail_screen.dart';
 import 'presentation/screens/card_select_screen.dart';
 import 'presentation/screens/compatibility_input_screen.dart';
 import 'presentation/screens/profile_screen.dart';
+import 'presentation/screens/login_screen.dart';
 import 'presentation/screens/daily_tarot_screen.dart';
 import 'presentation/screens/horoscope_screen.dart';
 import 'presentation/widgets/divine_loading_widget.dart';
@@ -39,6 +40,10 @@ class MysticTarotApp extends ConsumerWidget {
       initialRoute: isFirstLaunch ? '/language' : '/home',
       onGenerateRoute: (settings) {
         switch (settings.name) {
+          case '/login':
+            return MaterialPageRoute(
+              builder: (_) => const LoginScreen(),
+            );
           case '/language':
             return MaterialPageRoute(
               builder: (_) => const LanguageSelectionScreen(),

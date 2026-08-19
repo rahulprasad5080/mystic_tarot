@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../state/providers/auth_provider.dart';
 
-/// User Profile Detail screen (Aria Moon profile view).
-class ProfileScreen extends StatefulWidget {
+/// User Profile Detail screen integrated with Firebase Auth state.
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     const backgroundColor = Color(0xFFF7F7FD);
+    final user = ref.watch(currentUserProvider);
+    final authService = ref.watch(authServiceProvider);
+
+    final displayName = user?.displayName != null && user!.displayName!.isNotEmpty
+        ? user.displayName!
+        : (user?.isAnonymous == true ? 'Guest Seeker' : 'Mystic Traveler');
+
+    final emailText = user?.email != null && user!.email!.isNotEmpty
+        ? user.email!
+        : (user?.isAnonymous == true
+            ? 'Guest Account'
+            : (user != null ? 'Registered User' : 'Not Signed In'));
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -83,7 +92,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             child: ClipOval(
                               child: Icon(
-                                Icons.person,
+                                user?.isAnonymous == true
+                                    ? Icons.person_outline
+                                    : Icons.person,
                                 size: 60,
                                 color: Colors.grey.shade600,
                               ),
@@ -119,9 +130,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 14),
 
                     // User Name
-                    const Text(
-                      'Aria Moon',
-                      style: TextStyle(
+                    Text(
+                      displayName,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF101828),
@@ -130,9 +141,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 4),
 
                     // User Email
-                    const Text(
-                      'aria.moon@example.com',
-                      style: TextStyle(
+                    Text(
+                      emailText,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: Color(0xFF667085),
@@ -174,15 +185,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     const SizedBox(height: 28),
 
-                    // Log Out Button
+                    // Log Out / Sign In Button
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (user != null) {
+                            await authService.signOut();
+                          }
+                          if (context.mounted) {
+                            Navigator.of(context).pushReplacementNamed('/login');
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFF0F0),
-                          foregroundColor: const Color(0xFFDC2626),
+                          backgroundColor: user != null
+                              ? const Color(0xFFFFF0F0)
+                              : const Color(0xFFEBF5FF),
+                          foregroundColor: user != null
+                              ? const Color(0xFFDC2626)
+                              : const Color(0xFF006884),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -190,19 +212,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(
-                              Icons.logout_rounded,
-                              color: Color(0xFFDC2626),
+                              user != null
+                                  ? Icons.logout_rounded
+                                  : Icons.login_rounded,
+                              color: user != null
+                                  ? const Color(0xFFDC2626)
+                                  : const Color(0xFF006884),
                               size: 20,
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
-                              'Log Out',
+                              user != null ? 'Log Out' : 'Sign In',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFFDC2626),
+                                color: user != null
+                                    ? const Color(0xFFDC2626)
+                                    : const Color(0xFF006884),
                               ),
                             ),
                           ],
