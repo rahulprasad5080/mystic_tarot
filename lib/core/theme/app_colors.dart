@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:flutter/material.dart';
 
 /// Light "white & sky blue" palette for the Tarot app.
 /// Crisp white surfaces, sky-blue accents, and deep-slate text
@@ -69,4 +69,20 @@ class AppColors {
   static const Color categoryLife = Color(0xFF10B981);
   static const Color categoryHoroscope = Color(0xFFF59E0B);
   static const Color categorySpirituality = Color(0xFF6366F1);
+
+  // Gold & Cosmic dark palette tokens
+  static const Color gold = Color(0xFFF59E0B);
+  static const Color primaryGold = Color(0xFFD97706);
+  static const Color backgroundDark = Color(0xFF0F172A);
+  static const Color surfaceDark = Color(0xFF1E293B);
+  static const Color surfaceLight = Color(0xFF334155);
+  static const Color cardDark = Color(0xFF1E293B);
+  static const Color textLight = Color(0xFFF8FAFC);
+
+  static const LinearGradient goldGradient = LinearGradient(
+    colors: [Color(0xFFFBBF24), Color(0xFFD97706)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }
+

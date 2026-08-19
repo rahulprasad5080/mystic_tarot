@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import 'api_constants.dart';
 
-/// Defines all 20 reading types with their metadata, icons, and API endpoint references.
-enum ReadingCategory { tarot, love, life, spiritual }
+/// Defines reading categories including Tarot, Horoscope, Love, Life, Spiritual.
+enum ReadingCategory { horoscope, tarot, love, life, spiritual }
 
 /// Defines the type of input a reading requires before calling the API.
 enum ReadingInputType {
@@ -12,6 +12,9 @@ enum ReadingInputType {
 
   /// Requires selecting a card_image (1–22 for Major Arcana).
   cardSelect,
+
+  /// Requires selecting a single zodiac sign.
+  signSelect,
 
   /// Requires selecting two zodiac signs for compatibility.
   twoSigns,
@@ -22,8 +25,8 @@ enum ReadingInputType {
 
 class ReadingType {
   final String id;
-  final String nameKey; // l10n key
-  final String descriptionKey; // l10n key
+  final String nameKey; // l10n key or raw title fallback
+  final String descriptionKey; // l10n key or raw desc fallback
   final String endpoint;
   final IconData icon;
   final Color accentColor;
@@ -42,11 +45,53 @@ class ReadingType {
   });
 }
 
-/// All 20 primary reading types.
+/// All primary reading types.
 class ReadingTypes {
   ReadingTypes._();
 
   static const List<ReadingType> all = [
+    // ── Horoscopes ──
+    ReadingType(
+      id: 'daily_horoscope',
+      nameKey: 'Daily Horoscope',
+      descriptionKey: 'Daily celestial predictions for love, health, career & luck',
+      endpoint: ApiConstants.dailyHoroscope,
+      icon: Icons.wb_sunny_rounded,
+      accentColor: AppColors.gold,
+      category: ReadingCategory.horoscope,
+      inputType: ReadingInputType.signSelect,
+    ),
+    ReadingType(
+      id: 'weekly_horoscope',
+      nameKey: 'Weekly Horoscope',
+      descriptionKey: 'Weekly planetary guidance and life forecast',
+      endpoint: ApiConstants.weeklyHoroscope,
+      icon: Icons.calendar_view_week_rounded,
+      accentColor: AppColors.primaryGold,
+      category: ReadingCategory.horoscope,
+      inputType: ReadingInputType.signSelect,
+    ),
+    ReadingType(
+      id: 'monthly_horoscope',
+      nameKey: 'Monthly Horoscope',
+      descriptionKey: 'Monthly astrological foresight for all life areas',
+      endpoint: ApiConstants.monthlyHoroscope,
+      icon: Icons.calendar_month_rounded,
+      accentColor: AppColors.accentBlue,
+      category: ReadingCategory.horoscope,
+      inputType: ReadingInputType.signSelect,
+    ),
+    ReadingType(
+      id: 'yearly_horoscope',
+      nameKey: 'Yearly Horoscope',
+      descriptionKey: 'Full year astrological roadmap and key transits',
+      endpoint: ApiConstants.yearlyHoroscope,
+      icon: Icons.auto_awesome_rounded,
+      accentColor: AppColors.categorySpirituality,
+      category: ReadingCategory.horoscope,
+      inputType: ReadingInputType.signSelect,
+    ),
+
     // ── Tarot Readings ──
     ReadingType(
       id: 'yes_or_no_tarot',
@@ -254,3 +299,4 @@ class ReadingTypes {
     }
   }
 }
+

@@ -8,25 +8,27 @@ import '../models/dual_card_result.dart';
 import '../models/love_compatibility_result.dart';
 import '../models/coffee_cup_result.dart';
 import '../models/special_results.dart';
+import '../models/horoscope_result.dart';
 
 /// HTTP client for all DivineAPI endpoints.
 ///
-/// All endpoints are POST with multipart/form-data.
+/// Supports POST with multipart/form-data across all DivineAPI host domains.
 /// Auth: Bearer token header + api_key body param.
-/// The API returns HTTP 200 even on errors — check `success` field.
 class DivineApiService {
   final http.Client _client;
 
   DivineApiService({http.Client? client}) : _client = client ?? http.Client();
 
-  /// Build the full URL for an endpoint.
-  Uri _buildUri(String endpoint) {
-    return Uri.parse('${ApiConstants.baseUrl}$endpoint');
+  /// Build the full Uri for an endpoint, with optional domain host override.
+  Uri _buildUri(String endpoint, {String? host}) {
+    final base = host ?? ApiConstants.baseUrl;
+    final cleanEndpoint = endpoint.startsWith('/') ? endpoint : '/$endpoint';
+    return Uri.parse('$base$cleanEndpoint');
   }
 
-  /// Create a multipart request with standard auth fields.
-  http.MultipartRequest _createRequest(String endpoint) {
-    final request = http.MultipartRequest('POST', _buildUri(endpoint));
+  /// Create a multipart request with standard auth fields and optional host override.
+  http.MultipartRequest _createRequest(String endpoint, {String? host}) {
+    final request = http.MultipartRequest('POST', _buildUri(endpoint, host: host));
     request.headers['Authorization'] = 'Bearer ${ApiConstants.authToken}';
     request.fields['api_key'] = ApiConstants.apiKey;
     return request;
@@ -53,15 +55,97 @@ class DivineApiService {
     }
   }
 
-  // ────────────────────────── Simple Readings ──────────────────────────
-  // These require only api_key + optional lan.
+  // ────────────────────────── Horoscopes ──────────────────────────────
 
-  /// Generic simple reading (most tarot/spiritual endpoints).
+  /// Get Daily Horoscope prediction for a zodiac sign.
+  Future<ApiResponse<HoroscopeResult>> getDailyHoroscope({
+    required String sign,
+    String hDay = 'today',
+    String timeZone = '5.5',
+    required String language,
+  }) async {
+    final request = _createRequest(
+      ApiConstants.dailyHoroscope,
+      host: ApiConstants.hostHoroscopeTarot,
+    );
+    request.fields['sign'] = sign.toLowerCase();
+    request.fields['h_day'] = hDay;
+    request.fields['tzone'] = timeZone;
+    request.fields['lan'] = language;
+
+    final json = await _sendRequest(request);
+    return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
+  }
+
+  /// Get Weekly Horoscope prediction for a zodiac sign.
+  Future<ApiResponse<HoroscopeResult>> getWeeklyHoroscope({
+    required String sign,
+    String week = 'current',
+    String timeZone = '5.5',
+    required String language,
+  }) async {
+    final request = _createRequest(
+      ApiConstants.weeklyHoroscope,
+      host: ApiConstants.hostHoroscopeTarot,
+    );
+    request.fields['sign'] = sign.toLowerCase();
+    request.fields['week'] = week;
+    request.fields['tzone'] = timeZone;
+    request.fields['lan'] = language;
+
+    final json = await _sendRequest(request);
+    return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
+  }
+
+  /// Get Monthly Horoscope prediction for a zodiac sign.
+  Future<ApiResponse<HoroscopeResult>> getMonthlyHoroscope({
+    required String sign,
+    String month = 'current',
+    String timeZone = '5.5',
+    required String language,
+  }) async {
+    final request = _createRequest(
+      ApiConstants.monthlyHoroscope,
+      host: ApiConstants.hostHoroscopeTarot,
+    );
+    request.fields['sign'] = sign.toLowerCase();
+    request.fields['month'] = month;
+    request.fields['tzone'] = timeZone;
+    request.fields['lan'] = language;
+
+    final json = await _sendRequest(request);
+    return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
+  }
+
+  /// Get Yearly Horoscope prediction for a zodiac sign.
+  Future<ApiResponse<HoroscopeResult>> getYearlyHoroscope({
+    required String sign,
+    String year = 'current',
+    String timeZone = '5.5',
+    required String language,
+  }) async {
+    final request = _createRequest(
+      ApiConstants.yearlyHoroscope,
+      host: ApiConstants.hostHoroscopeTarot,
+    );
+    request.fields['sign'] = sign.toLowerCase();
+    request.fields['year'] = year;
+    request.fields['tzone'] = timeZone;
+    request.fields['lan'] = language;
+
+    final json = await _sendRequest(request);
+    return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
+  }
+
+  // ────────────────────────── Simple Readings ──────────────────────────
+
+  /// Generic simple reading (tarot/spiritual endpoints).
   Future<ApiResponse<ReadingResult>> getSimpleReading({
     required String endpoint,
     required String language,
+    String? host,
   }) async {
-    final request = _createRequest(endpoint);
+    final request = _createRequest(endpoint, host: host);
     request.fields['lan'] = language;
 
     final json = await _sendRequest(request);
@@ -69,15 +153,15 @@ class DivineApiService {
   }
 
   // ────────────────────── Card-Select Readings ────────────────────────
-  // These require api_key + card_image (1-22) + lan.
 
   /// Reading that requires selecting a card (1-22 for Major Arcana).
   Future<ApiResponse<ReadingResult>> getCardSelectReading({
     required String endpoint,
     required String cardImage,
     required String language,
+    String? host,
   }) async {
-    final request = _createRequest(endpoint);
+    final request = _createRequest(endpoint, host: host);
     request.fields['card_image'] = cardImage;
     request.fields['lan'] = language;
 
@@ -86,15 +170,15 @@ class DivineApiService {
   }
 
   // ────────────────────── Dual-Card Readings ──────────────────────────
-  // Heartbreak, Divine Magic, Wisdom — return card1 + card2.
 
   /// Dual-card reading with card_image selection.
   Future<ApiResponse<DualCardResult>> getDualCardReading({
     required String endpoint,
     required String cardImage,
     required String language,
+    String? host,
   }) async {
-    final request = _createRequest(endpoint);
+    final request = _createRequest(endpoint, host: host);
     request.fields['card_image'] = cardImage;
     request.fields['lan'] = language;
 
@@ -165,3 +249,4 @@ class DivineApiService {
     _client.close();
   }
 }
+

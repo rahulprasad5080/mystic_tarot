@@ -14,7 +14,10 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _onReadingTap(ReadingType reading) {
-    if (reading.id == 'daily_tarot') {
+    if (reading.category == ReadingCategory.horoscope ||
+        reading.inputType == ReadingInputType.signSelect) {
+      Navigator.of(context).pushNamed('/horoscope');
+    } else if (reading.id == 'daily_tarot') {
       Navigator.of(context).pushNamed('/daily-tarot');
     } else if (reading.inputType == ReadingInputType.twoSigns) {
       Navigator.of(context).pushNamed(

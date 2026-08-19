@@ -15,12 +15,14 @@ class ReadingParams {
   final String? cardImage;
   final String? sign1;
   final String? sign2;
+  final String? sign;
 
   const ReadingParams({
     required this.readingType,
     this.cardImage,
     this.sign1,
     this.sign2,
+    this.sign,
   });
 
   @override
@@ -31,14 +33,16 @@ class ReadingParams {
           readingType.id == other.readingType.id &&
           cardImage == other.cardImage &&
           sign1 == other.sign1 &&
-          sign2 == other.sign2;
+          sign2 == other.sign2 &&
+          sign == other.sign;
 
   @override
   int get hashCode =>
       readingType.id.hashCode ^
       cardImage.hashCode ^
       sign1.hashCode ^
-      sign2.hashCode;
+      sign2.hashCode ^
+      sign.hashCode;
 }
 
 /// FutureProvider.family for fetching a reading.
@@ -56,6 +60,8 @@ final readingProvider =
       cardImage: params.cardImage,
       sign1: params.sign1,
       sign2: params.sign2,
+      sign: params.sign,
     );
   },
 );
+

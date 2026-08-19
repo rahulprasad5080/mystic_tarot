@@ -4,6 +4,7 @@ import '../models/dual_card_result.dart';
 import '../models/love_compatibility_result.dart';
 import '../models/coffee_cup_result.dart';
 import '../models/special_results.dart';
+import '../models/horoscope_result.dart';
 import '../services/divine_api_service.dart';
 import '../../core/constants/api_constants.dart';
 import '../../core/constants/reading_types.dart';
@@ -18,6 +19,58 @@ class ReadingRepository {
 
   ReadingRepository({DivineApiService? apiService})
       : _apiService = apiService ?? DivineApiService();
+
+  /// Get Daily Horoscope prediction for a sign.
+  Future<ApiResponse<HoroscopeResult>> getDailyHoroscope({
+    required String sign,
+    String hDay = 'today',
+    required String language,
+  }) {
+    return _apiService.getDailyHoroscope(
+      sign: sign,
+      hDay: hDay,
+      language: language,
+    );
+  }
+
+  /// Get Weekly Horoscope prediction for a sign.
+  Future<ApiResponse<HoroscopeResult>> getWeeklyHoroscope({
+    required String sign,
+    String week = 'current',
+    required String language,
+  }) {
+    return _apiService.getWeeklyHoroscope(
+      sign: sign,
+      week: week,
+      language: language,
+    );
+  }
+
+  /// Get Monthly Horoscope prediction for a sign.
+  Future<ApiResponse<HoroscopeResult>> getMonthlyHoroscope({
+    required String sign,
+    String month = 'current',
+    required String language,
+  }) {
+    return _apiService.getMonthlyHoroscope(
+      sign: sign,
+      month: month,
+      language: language,
+    );
+  }
+
+  /// Get Yearly Horoscope prediction for a sign.
+  Future<ApiResponse<HoroscopeResult>> getYearlyHoroscope({
+    required String sign,
+    String year = 'current',
+    required String language,
+  }) {
+    return _apiService.getYearlyHoroscope(
+      sign: sign,
+      year: year,
+      language: language,
+    );
+  }
 
   /// Get a simple reading (no extra input required).
   Future<ApiResponse<ReadingResult>> getSimpleReading({
@@ -99,7 +152,34 @@ class ReadingRepository {
     String? cardImage,
     String? sign1,
     String? sign2,
+    String? sign,
   }) {
+    // Horoscope endpoints
+    if (readingType.endpoint == ApiConstants.dailyHoroscope) {
+      return getDailyHoroscope(
+        sign: sign ?? sign1 ?? 'Aries',
+        language: language,
+      );
+    }
+    if (readingType.endpoint == ApiConstants.weeklyHoroscope) {
+      return getWeeklyHoroscope(
+        sign: sign ?? sign1 ?? 'Aries',
+        language: language,
+      );
+    }
+    if (readingType.endpoint == ApiConstants.monthlyHoroscope) {
+      return getMonthlyHoroscope(
+        sign: sign ?? sign1 ?? 'Aries',
+        language: language,
+      );
+    }
+    if (readingType.endpoint == ApiConstants.yearlyHoroscope) {
+      return getYearlyHoroscope(
+        sign: sign ?? sign1 ?? 'Aries',
+        language: language,
+      );
+    }
+
     // Special endpoints with unique response shapes
     if (readingType.endpoint == ApiConstants.loveCompatibility) {
       return getLoveCompatibility(
@@ -150,3 +230,4 @@ class ReadingRepository {
     );
   }
 }
+
