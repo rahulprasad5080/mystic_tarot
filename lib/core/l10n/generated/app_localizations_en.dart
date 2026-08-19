@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Mystic Tarot';
+  String get appTitle => 'Ably Tarot Card Reading';
 
   @override
   String get homeSubtitle => 'Seek cosmic wisdom & spiritual guidance';

@@ -147,9 +147,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   // App Title & Tagline
                   const Text(
-                    'Mystic Tarot',
+                    'Ably Tarot Card Reading',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 24,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF101828),
                       letterSpacing: -0.5,

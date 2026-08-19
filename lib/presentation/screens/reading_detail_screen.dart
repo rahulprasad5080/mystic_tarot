@@ -574,7 +574,7 @@ class ReadingDetailScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'MYSTIC TAROT',
+                'ABLY TAROT CARD READING',
                 style: AppTextStyles.labelSmall.copyWith(
                   color: AppColors.accentBlue,
                   letterSpacing: 2,

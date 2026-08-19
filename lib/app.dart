@@ -26,7 +26,7 @@ class MysticTarotApp extends ConsumerWidget {
     final isFirstLaunch = ref.watch(isFirstLaunchProvider);
 
     return MaterialApp(
-      title: 'Mystic Tarot',
+      title: 'Ably Tarot Card Reading',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       locale: locale,

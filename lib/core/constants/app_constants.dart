@@ -2,7 +2,7 @@
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'Mystic Tarot';
+  static const String appName = 'Ably Tarot Card Reading';
   static const String appVersion = '1.0.0';
 
   // SharedPreferences keys
