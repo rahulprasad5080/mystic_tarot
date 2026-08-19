@@ -1,3 +1,5 @@
+import '../../core/utils/json_utils.dart';
+
 /// Model for Love Compatibility result.
 class LoveCompatibilityResult {
   final String? sign1;
@@ -21,20 +23,22 @@ class LoveCompatibilityResult {
   });
 
   factory LoveCompatibilityResult.fromJson(Map<String, dynamic> json) {
-    final prediction = json['prediction'] as Map<String, dynamic>? ?? json;
+    final rawPred = json['prediction'];
+    final Map<String, dynamic> prediction = rawPred is Map
+        ? JsonUtils.parseMap(rawPred)
+        : json;
+
+    final rawScore = prediction['score'] ?? json['score'];
 
     return LoveCompatibilityResult(
-      sign1: prediction['sign_1'] as String?,
-      sign2: prediction['sign_2'] as String?,
-      overallCompatibility: prediction['overall_compatibility'] as String?,
-      positiveAspects: prediction['positive_aspects'] as String?,
-      negativeAspects: prediction['negative_aspects'] as String?,
-      elements: prediction['elements'] as String?,
-      idealDate: prediction['ideal_date'] as String?,
-      score: prediction['score'] != null
-          ? CompatibilityScore.fromJson(
-              prediction['score'] as Map<String, dynamic>)
-          : null,
+      sign1: JsonUtils.parseString(prediction['sign_1'] ?? json['sign_1']),
+      sign2: JsonUtils.parseString(prediction['sign_2'] ?? json['sign_2']),
+      overallCompatibility: JsonUtils.parseString(prediction['overall_compatibility'] ?? json['overall_compatibility']),
+      positiveAspects: JsonUtils.parseString(prediction['positive_aspects'] ?? json['positive_aspects']),
+      negativeAspects: JsonUtils.parseString(prediction['negative_aspects'] ?? json['negative_aspects']),
+      elements: JsonUtils.parseString(prediction['elements'] ?? json['elements']),
+      idealDate: JsonUtils.parseString(prediction['ideal_date'] ?? json['ideal_date']),
+      score: rawScore is Map ? CompatibilityScore.fromJson(JsonUtils.parseMap(rawScore)) : null,
     );
   }
 }
@@ -48,9 +52,9 @@ class CompatibilityScore {
 
   factory CompatibilityScore.fromJson(Map<String, dynamic> json) {
     return CompatibilityScore(
-      general: json['general']?.toString(),
-      communication: json['communication']?.toString(),
-      sex: json['sex']?.toString(),
+      general: JsonUtils.parseString(json['general']),
+      communication: JsonUtils.parseString(json['communication']),
+      sex: JsonUtils.parseString(json['sex']),
     );
   }
 }

@@ -1,3 +1,5 @@
+import '../../core/utils/json_utils.dart';
+
 /// Model for Coffee Cup Reading result.
 /// Returns 3 positions: present, near future, distant future.
 class CoffeeCupResult {
@@ -24,18 +26,21 @@ class CoffeeCupResult {
   });
 
   factory CoffeeCupResult.fromJson(Map<String, dynamic> json) {
-    final prediction = json['prediction'] as Map<String, dynamic>? ?? json;
+    final rawPred = json['prediction'];
+    final Map<String, dynamic> prediction = rawPred is Map
+        ? JsonUtils.parseMap(rawPred)
+        : json;
 
     return CoffeeCupResult(
-      presentTitle: prediction['present_title'] as String?,
-      presentImage: prediction['present_image'] as String?,
-      presentContent: prediction['present_content'] as String?,
-      nearFutureTitle: prediction['near_future_title'] as String?,
-      nearFutureImage: prediction['near_future_image'] as String?,
-      nearFutureContent: prediction['near_future_content'] as String?,
-      distantFutureTitle: prediction['distant_future_title'] as String?,
-      distantFutureImage: prediction['distant_future_image'] as String?,
-      distantFutureContent: prediction['distant_future_content'] as String?,
+      presentTitle: JsonUtils.parseString(prediction['present_title'] ?? json['present_title']),
+      presentImage: JsonUtils.parseString(prediction['present_image'] ?? json['present_image']),
+      presentContent: JsonUtils.parseString(prediction['present_content'] ?? json['present_content']),
+      nearFutureTitle: JsonUtils.parseString(prediction['near_future_title'] ?? json['near_future_title']),
+      nearFutureImage: JsonUtils.parseString(prediction['near_future_image'] ?? json['near_future_image']),
+      nearFutureContent: JsonUtils.parseString(prediction['near_future_content'] ?? json['near_future_content']),
+      distantFutureTitle: JsonUtils.parseString(prediction['distant_future_title'] ?? json['distant_future_title']),
+      distantFutureImage: JsonUtils.parseString(prediction['distant_future_image'] ?? json['distant_future_image']),
+      distantFutureContent: JsonUtils.parseString(prediction['distant_future_content'] ?? json['distant_future_content']),
     );
   }
 }

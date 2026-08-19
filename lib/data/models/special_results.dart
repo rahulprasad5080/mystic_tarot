@@ -1,3 +1,5 @@
+import '../../core/utils/json_utils.dart';
+
 /// Model for Love Triangle Reading result.
 /// Returns 3 cards with perspectives: your view, lover1, lover2.
 class LoveTriangleResult {
@@ -24,18 +26,21 @@ class LoveTriangleResult {
   });
 
   factory LoveTriangleResult.fromJson(Map<String, dynamic> json) {
-    final prediction = json['prediction'] as Map<String, dynamic>? ?? json;
+    final rawPred = json['prediction'];
+    final Map<String, dynamic> prediction = rawPred is Map
+        ? JsonUtils.parseMap(rawPred)
+        : json;
 
     return LoveTriangleResult(
-      card1: prediction['card1'] as String?,
-      card2: prediction['card2'] as String?,
-      card3: prediction['card3'] as String?,
-      card1Image: prediction['card1_image'] as String?,
-      card2Image: prediction['card2_image'] as String?,
-      card3Image: prediction['card3_image'] as String?,
-      your: prediction['your'] as String?,
-      lover1: prediction['lover1'] as String?,
-      lover2: prediction['lover2'] as String?,
+      card1: JsonUtils.parseString(prediction['card1'] ?? json['card1']),
+      card2: JsonUtils.parseString(prediction['card2'] ?? json['card2']),
+      card3: JsonUtils.parseString(prediction['card3'] ?? json['card3']),
+      card1Image: JsonUtils.parseString(prediction['card1_image'] ?? json['card1_image']),
+      card2Image: JsonUtils.parseString(prediction['card2_image'] ?? json['card2_image']),
+      card3Image: JsonUtils.parseString(prediction['card3_image'] ?? json['card3_image']),
+      your: JsonUtils.parseString(prediction['your'] ?? json['your']),
+      lover1: JsonUtils.parseString(prediction['lover1'] ?? json['lover1']),
+      lover2: JsonUtils.parseString(prediction['lover2'] ?? json['lover2']),
     );
   }
 }
@@ -47,9 +52,13 @@ class FortuneCookieResult {
   const FortuneCookieResult({this.result});
 
   factory FortuneCookieResult.fromJson(Map<String, dynamic> json) {
-    final prediction = json['prediction'] as Map<String, dynamic>? ?? json;
+    final rawPred = json['prediction'];
+    final Map<String, dynamic> prediction = rawPred is Map
+        ? JsonUtils.parseMap(rawPred)
+        : json;
+
     return FortuneCookieResult(
-      result: prediction['result'] as String?,
+      result: JsonUtils.parseString(prediction['result'] ?? json['result']),
     );
   }
 }

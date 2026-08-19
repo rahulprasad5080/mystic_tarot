@@ -1,3 +1,5 @@
+import '../../core/utils/json_utils.dart';
+
 /// Generic model for single-card reading results.
 /// Used by: Yes/No Tarot, Daily Tarot, Career Reading, Divine Angel,
 /// Dream Come True, Egyptian, Erotic Love, Ex-Flame, Flirt Love,
@@ -31,35 +33,23 @@ class ReadingResult {
   });
 
   factory ReadingResult.fromJson(Map<String, dynamic> json) {
-    final prediction = json['prediction'] as Map<String, dynamic>?;
-    if (prediction == null) {
-      // Some endpoints put data directly (e.g. daily tarot)
-      return ReadingResult(
-        card: json['card'] as String?,
-        category: json['category'] as String?,
-        result: json['result'] as String?,
-        career: json['career'] as String?,
-        love: json['love'] as String?,
-        finance: json['finance'] as String?,
-        image: json['image'] as String?,
-        image2: json['image2'] as String?,
-        image3: json['image3'] as String?,
-        cardImage: json['card_image'] as String?,
-      );
-    }
+    final rawPred = json['prediction'];
+    final Map<String, dynamic> dataMap = rawPred is Map
+        ? JsonUtils.parseMap(rawPred)
+        : json;
 
     return ReadingResult(
-      card: prediction['card'] as String?,
-      category: prediction['category'] as String?,
-      yesNo: prediction['yes_no'] as String?,
-      result: prediction['result'] as String?,
-      career: prediction['career'] as String?,
-      love: prediction['love'] as String?,
-      finance: prediction['finance'] as String?,
-      image: prediction['image'] as String?,
-      image2: prediction['image2'] as String?,
-      image3: prediction['image3'] as String?,
-      cardImage: prediction['card_image'] as String?,
+      card: JsonUtils.parseString(dataMap['card'] ?? json['card']),
+      category: JsonUtils.parseString(dataMap['category'] ?? json['category']),
+      yesNo: JsonUtils.parseString(dataMap['yes_no'] ?? json['yes_no']),
+      result: JsonUtils.parseString(dataMap['result'] ?? json['result']),
+      career: JsonUtils.parseString(dataMap['career'] ?? json['career']),
+      love: JsonUtils.parseString(dataMap['love'] ?? json['love']),
+      finance: JsonUtils.parseString(dataMap['finance'] ?? json['finance']),
+      image: JsonUtils.parseString(dataMap['image'] ?? json['image']),
+      image2: JsonUtils.parseString(dataMap['image2'] ?? json['image2']),
+      image3: JsonUtils.parseString(dataMap['image3'] ?? json['image3']),
+      cardImage: JsonUtils.parseString(dataMap['card_image'] ?? json['card_image']),
     );
   }
 

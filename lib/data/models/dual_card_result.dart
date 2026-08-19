@@ -1,3 +1,5 @@
+import '../../core/utils/json_utils.dart';
+
 /// Model for two-card readings (Heartbreak, Divine Magic, Wisdom).
 /// These return card1 + card2 with separate text fields.
 class DualCardResult {
@@ -24,18 +26,21 @@ class DualCardResult {
   });
 
   factory DualCardResult.fromJson(Map<String, dynamic> json) {
-    final prediction = json['prediction'] as Map<String, dynamic>? ?? json;
+    final rawPred = json['prediction'];
+    final Map<String, dynamic> prediction = rawPred is Map
+        ? JsonUtils.parseMap(rawPred)
+        : json;
 
     return DualCardResult(
-      card1: prediction['card1'] as String?,
-      card2: prediction['card2'] as String?,
-      card1Image: prediction['card1_image'] as String?,
-      card2Image: prediction['card2_image'] as String?,
-      cause: prediction['cause'] as String?,
-      remedy: prediction['remedy'] as String?,
-      advise: prediction['advise'] as String?,
-      ying: prediction['ying'] as String?,
-      yang: prediction['yang'] as String?,
+      card1: JsonUtils.parseString(prediction['card1'] ?? json['card1']),
+      card2: JsonUtils.parseString(prediction['card2'] ?? json['card2']),
+      card1Image: JsonUtils.parseString(prediction['card1_image'] ?? json['card1_image']),
+      card2Image: JsonUtils.parseString(prediction['card2_image'] ?? json['card2_image']),
+      cause: JsonUtils.parseString(prediction['cause'] ?? json['cause']),
+      remedy: JsonUtils.parseString(prediction['remedy'] ?? json['remedy']),
+      advise: JsonUtils.parseString(prediction['advise'] ?? json['advise']),
+      ying: JsonUtils.parseString(prediction['ying'] ?? json['ying']),
+      yang: JsonUtils.parseString(prediction['yang'] ?? json['yang']),
     );
   }
 

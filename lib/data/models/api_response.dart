@@ -1,3 +1,5 @@
+import '../../core/utils/json_utils.dart';
+
 /// Generic wrapper for DivineAPI responses.
 /// The API always returns HTTP 200 — success is indicated by the `success` field.
 class ApiResponse<T> {
@@ -18,12 +20,22 @@ class ApiResponse<T> {
     Map<String, dynamic> json,
     T Function(Map<String, dynamic>) fromJsonT,
   ) {
+    final rawSuccess = json['success'];
+    final int parsedSuccess = rawSuccess is int
+        ? rawSuccess
+        : (rawSuccess is num
+            ? rawSuccess.toInt()
+            : (int.tryParse(rawSuccess?.toString() ?? '') ?? 0));
+
+    final rawData = json['data'];
+    final Map<String, dynamic> dataMap = rawData is Map
+        ? JsonUtils.parseMap(rawData)
+        : (rawData is List ? {'result': rawData, ...json} : json);
+
     return ApiResponse<T>(
-      success: json['success'] as int? ?? 0,
-      data: json['data'] != null
-          ? fromJsonT(json['data'] as Map<String, dynamic>)
-          : null,
-      message: json['msg'] as String?,
+      success: parsedSuccess,
+      data: rawData != null ? fromJsonT(dataMap) : null,
+      message: JsonUtils.parseString(json['msg'] ?? json['message']),
     );
   }
 
