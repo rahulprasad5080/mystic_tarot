@@ -335,6 +335,32 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
     );
   }
 
+  String _getReadingTitle(ReadingType reading) {
+    final map = <String, String>{
+      'yes_or_no_tarot': 'Yes OR No Tarot',
+      'in_depth_love': 'In-Depth Love Reading',
+      'divine_angel': 'Divine Angel Reading',
+      'daily_tarot': 'Daily Tarot',
+      'dream_come_true': 'Dream Come True Reading',
+      'fortune_cookie': 'Which Animal Are You Reading',
+      'past_lives_connection': 'Past-Present-Future Reading',
+      'flirt_love': 'Flirt Love Reading',
+      'erotic_love': 'Erotic Love Reading',
+      'egyptian_prediction': 'Egyptian Prediction',
+      'ex_flame': 'Ex-Flame Reading',
+      'made_for_each_other': 'Made For Each Other Or Not Reading',
+      'power_life': 'Power Life Reading',
+      'know_your_friend': 'Know Your Friend Reading',
+      'career_daily': 'Career Daily Reading',
+      'heartbreak': 'Heartbreak Reading',
+      'love_triangle': 'Love Triangle Reading',
+      'coffee_cup': 'Wisdom Reading',
+      'divine_magic': 'Divine Magic Reading',
+      'love_compatibility': 'Past Lives Connection Reading',
+    };
+    return map[reading.id] ?? reading.id;
+  }
+
   void _startReading() {
     final question = _questionController.text.trim();
     final name = _nameController.text.trim();
@@ -441,18 +467,8 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                     ),
                   ),
 
-                  // Profile Icon Button
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/profile');
-                    },
-                    borderRadius: BorderRadius.circular(20),
-                    child: const Icon(
-                      Icons.account_circle_outlined,
-                      color: Color(0xFF006884),
-                      size: 26,
-                    ),
-                  ),
+                  // Empty right space to keep header centered (Profile icon removed)
+                  const SizedBox(width: 36),
                 ],
               ),
             ),
@@ -483,9 +499,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
 
                     // Reading Title
                     Text(
-                      widget.readingType.id == 'yes_or_no_tarot'
-                          ? 'Yes OR No Tarot'
-                          : widget.readingType.id,
+                      _getReadingTitle(widget.readingType),
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
