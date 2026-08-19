@@ -59,7 +59,7 @@ class _SavedReadingsScreenState extends State<SavedReadingsScreen> {
                   // User Avatar Icon Button
                   InkWell(
                     onTap: () {
-                      Navigator.of(context).pushNamed('/profile');
+                      Navigator.of(context).pushNamed('/settings');
                     },
                     borderRadius: BorderRadius.circular(20),
                     child: CircleAvatar(

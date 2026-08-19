@@ -12,7 +12,6 @@ import 'presentation/screens/reading_input_screen.dart';
 import 'presentation/screens/reading_detail_screen.dart';
 import 'presentation/screens/card_select_screen.dart';
 import 'presentation/screens/compatibility_input_screen.dart';
-import 'presentation/screens/profile_screen.dart';
 import 'presentation/screens/login_screen.dart';
 import 'state/providers/connectivity_provider.dart';
 import 'presentation/widgets/no_internet_widget.dart';
@@ -81,10 +80,6 @@ class MysticTarotApp extends ConsumerWidget {
           case '/settings':
             return MaterialPageRoute(
               builder: (_) => const MainScreen(initialIndex: 2),
-            );
-          case '/profile':
-            return MaterialPageRoute(
-              builder: (_) => const ProfileScreen(),
             );
           case '/loading':
             return MaterialPageRoute(
