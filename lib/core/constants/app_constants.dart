@@ -81,15 +81,15 @@ class AppConstants {
     LanguageInfo(code: 'tr', name: 'Turkish', nativeName: 'Türkçe', badge: 'TR', flag: '🇹🇷'),
     LanguageInfo(code: 'uk', name: 'Ukrainian', nativeName: 'Українська', badge: 'UK', flag: '🇺🇦'),
     LanguageInfo(code: 'hu', name: 'Hungarian', nativeName: 'Magyar', badge: 'HU', flag: '🇭🇺'),
-    LanguageInfo(code: 'el', name: 'Greek', nativeName: 'Ελληνικά', badge: 'EL', flag: '🇬🇷'),
+    LanguageInfo(code: 'gr', name: 'Greek', nativeName: 'Ελληνικά', badge: 'GR', flag: '🇬🇷'),
     LanguageInfo(code: 'bn', name: 'Bengali', nativeName: 'বাংলা', badge: 'BN', flag: '🇧🇩'),
-    LanguageInfo(code: 'mr', name: 'Marathi', nativeName: 'मराठी', badge: 'MR', flag: '🇮🇳'),
-    LanguageInfo(code: 'ta', name: 'Tamil', nativeName: 'தமிழ்', badge: 'TA', flag: '🇮🇳'),
-    LanguageInfo(code: 'te', name: 'Telugu', nativeName: 'తెలుగు', badge: 'TE', flag: '🇮🇳'),
+    LanguageInfo(code: 'ma', name: 'Marathi', nativeName: 'मराठी', badge: 'MA', flag: '🇮🇳'),
+    LanguageInfo(code: 'tm', name: 'Tamil', nativeName: 'தமிழ்', badge: 'TM', flag: '🇮🇳'),
+    LanguageInfo(code: 'tl', name: 'Telugu', nativeName: 'తెలుగు', badge: 'TL', flag: '🇮🇳'),
     LanguageInfo(code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം', badge: 'ML', flag: '🇮🇳'),
     LanguageInfo(code: 'kn', name: 'Kannada', nativeName: 'ಕನ್ನಡ', badge: 'KN', flag: '🇮🇳'),
-    LanguageInfo(code: 'tl', name: 'Filipino', nativeName: 'Filipino', badge: 'TL', flag: '🇵🇭'),
-    LanguageInfo(code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia', badge: 'ID', flag: '🇮🇩'),
+    LanguageInfo(code: 'ta', name: 'Filipino', nativeName: 'Filipino', badge: 'TA', flag: '🇵🇭'),
+    LanguageInfo(code: 'bah', name: 'Indonesian', nativeName: 'Bahasa Indonesia', badge: 'BAH', flag: '🇮🇩'),
   ];
 }
 

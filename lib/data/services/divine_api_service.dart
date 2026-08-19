@@ -26,11 +26,19 @@ class DivineApiService {
     return Uri.parse('$base$cleanEndpoint');
   }
 
-  /// Create a multipart request with standard auth fields and optional host override.
-  http.MultipartRequest _createRequest(String endpoint, {String? host}) {
-    final request = http.MultipartRequest('POST', _buildUri(endpoint, host: host));
+  /// Create a multipart request with standard auth fields, resolving language & host dynamically.
+  http.MultipartRequest _createRequest(
+    String endpoint, {
+    required String? language,
+    String? customHost,
+  }) {
+    final validLanguage = ApiConstants.resolveLanguageCode(language);
+    final host = customHost ?? ApiConstants.getHostForLanguage(validLanguage);
+    final request =
+        http.MultipartRequest('POST', _buildUri(endpoint, host: host));
     request.headers['Authorization'] = 'Bearer ${ApiConstants.authToken}';
     request.fields['api_key'] = ApiConstants.apiKey;
+    request.fields['lan'] = validLanguage;
     return request;
   }
 
@@ -66,12 +74,11 @@ class DivineApiService {
   }) async {
     final request = _createRequest(
       ApiConstants.dailyHoroscope,
-      host: ApiConstants.hostHoroscopeTarot,
+      language: language,
     );
     request.fields['sign'] = sign.toLowerCase();
     request.fields['h_day'] = hDay;
     request.fields['tzone'] = timeZone;
-    request.fields['lan'] = language;
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
@@ -86,12 +93,11 @@ class DivineApiService {
   }) async {
     final request = _createRequest(
       ApiConstants.weeklyHoroscope,
-      host: ApiConstants.hostHoroscopeTarot,
+      language: language,
     );
     request.fields['sign'] = sign.toLowerCase();
     request.fields['week'] = week;
     request.fields['tzone'] = timeZone;
-    request.fields['lan'] = language;
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
@@ -106,12 +112,11 @@ class DivineApiService {
   }) async {
     final request = _createRequest(
       ApiConstants.monthlyHoroscope,
-      host: ApiConstants.hostHoroscopeTarot,
+      language: language,
     );
     request.fields['sign'] = sign.toLowerCase();
     request.fields['month'] = month;
     request.fields['tzone'] = timeZone;
-    request.fields['lan'] = language;
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
@@ -126,12 +131,11 @@ class DivineApiService {
   }) async {
     final request = _createRequest(
       ApiConstants.yearlyHoroscope,
-      host: ApiConstants.hostHoroscopeTarot,
+      language: language,
     );
     request.fields['sign'] = sign.toLowerCase();
     request.fields['year'] = year;
     request.fields['tzone'] = timeZone;
-    request.fields['lan'] = language;
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, HoroscopeResult.fromJson);
@@ -145,8 +149,11 @@ class DivineApiService {
     required String language,
     String? host,
   }) async {
-    final request = _createRequest(endpoint, host: host);
-    request.fields['lan'] = language;
+    final request = _createRequest(
+      endpoint,
+      language: language,
+      customHost: host,
+    );
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, ReadingResult.fromJson);
@@ -161,9 +168,12 @@ class DivineApiService {
     required String language,
     String? host,
   }) async {
-    final request = _createRequest(endpoint, host: host);
+    final request = _createRequest(
+      endpoint,
+      language: language,
+      customHost: host,
+    );
     request.fields['card_image'] = cardImage;
-    request.fields['lan'] = language;
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, ReadingResult.fromJson);
@@ -178,9 +188,12 @@ class DivineApiService {
     required String language,
     String? host,
   }) async {
-    final request = _createRequest(endpoint, host: host);
+    final request = _createRequest(
+      endpoint,
+      language: language,
+      customHost: host,
+    );
     request.fields['card_image'] = cardImage;
-    request.fields['lan'] = language;
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, DualCardResult.fromJson);
@@ -194,10 +207,12 @@ class DivineApiService {
     required String sign2,
     required String language,
   }) async {
-    final request = _createRequest(ApiConstants.loveCompatibility);
+    final request = _createRequest(
+      ApiConstants.loveCompatibility,
+      language: language,
+    );
     request.fields['sign_1'] = sign1;
     request.fields['sign_2'] = sign2;
-    request.fields['lan'] = language;
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, LoveCompatibilityResult.fromJson);
@@ -210,9 +225,11 @@ class DivineApiService {
     required String cardImage,
     required String language,
   }) async {
-    final request = _createRequest(ApiConstants.loveTriangleReading);
+    final request = _createRequest(
+      ApiConstants.loveTriangleReading,
+      language: language,
+    );
     request.fields['card_image'] = cardImage;
-    request.fields['lan'] = language;
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, LoveTriangleResult.fromJson);
@@ -224,8 +241,10 @@ class DivineApiService {
   Future<ApiResponse<CoffeeCupResult>> getCoffeeCupReading({
     required String language,
   }) async {
-    final request = _createRequest(ApiConstants.coffeeCupReading);
-    request.fields['lan'] = language;
+    final request = _createRequest(
+      ApiConstants.coffeeCupReading,
+      language: language,
+    );
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, CoffeeCupResult.fromJson);
@@ -237,8 +256,10 @@ class DivineApiService {
   Future<ApiResponse<FortuneCookieResult>> getFortuneCookie({
     required String language,
   }) async {
-    final request = _createRequest(ApiConstants.fortuneCookie);
-    request.fields['lan'] = language;
+    final request = _createRequest(
+      ApiConstants.fortuneCookie,
+      language: language,
+    );
 
     final json = await _sendRequest(request);
     return ApiResponse.fromJson(json, FortuneCookieResult.fromJson);

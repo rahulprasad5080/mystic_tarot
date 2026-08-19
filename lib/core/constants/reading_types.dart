@@ -283,6 +283,35 @@ class ReadingTypes {
       accentColor: AppColors.categorySpirituality,
       category: ReadingCategory.spiritual,
     ),
+    ReadingType(
+      id: 'which_animal_are_you',
+      nameKey: 'Which Animal Are You Reading',
+      descriptionKey: 'Discover your spiritual animal symbol and energy',
+      endpoint: ApiConstants.whichAnimalAreYouReading,
+      icon: Icons.pets_rounded,
+      accentColor: AppColors.categoryLife,
+      category: ReadingCategory.life,
+    ),
+    ReadingType(
+      id: 'past_present_future',
+      nameKey: 'Past-Present-Future Reading',
+      descriptionKey: '3-card spread exploring your timeline',
+      endpoint: ApiConstants.pastPresentFutureReading,
+      icon: Icons.timeline_rounded,
+      accentColor: AppColors.primaryBlue,
+      category: ReadingCategory.tarot,
+      inputType: ReadingInputType.cardSelect,
+    ),
+    ReadingType(
+      id: 'wisdom_reading',
+      nameKey: 'Wisdom Reading',
+      descriptionKey: 'Deep ancient guidance and spiritual insight',
+      endpoint: ApiConstants.wisdomReading,
+      icon: Icons.menu_book_rounded,
+      accentColor: AppColors.categorySpirituality,
+      category: ReadingCategory.spiritual,
+      inputType: ReadingInputType.cardSelect,
+    ),
   ];
 
   /// Get readings by category.

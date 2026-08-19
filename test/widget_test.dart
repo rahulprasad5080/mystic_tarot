@@ -5,8 +5,8 @@ import 'package:mystic_tarot/core/constants/reading_types.dart';
 
 void main() {
   group('ReadingTypes Tests', () {
-    test('Should have 20 primary reading types', () {
-      expect(ReadingTypes.all.length, equals(20));
+    test('Should have 27 primary reading types', () {
+      expect(ReadingTypes.all.length, equals(27));
     });
 
     test('All reading types should have valid endpoints', () {

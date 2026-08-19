@@ -10,11 +10,96 @@ class ApiConstants {
 
   /// Domain host URLs for different DivineAPI service tiers:
   static const String hostHoroscopeTarot = 'https://astroapi-5.divineapi.com';
+  static const String hostEnglish = 'https://astroapi-5.divineapi.com';
+  static const String hostTranslator = 'https://astroapi-5-translator.divineapi.com';
   static const String hostIndianPanchang = 'https://astroapi-3.divineapi.com';
   static const String hostWesternNumerology = 'https://astroapi-4.divineapi.com';
   static const String hostLifestyleCalculators = 'https://astroapi-7.divineapi.com';
   static const String hostWesternCharts = 'https://astroapi-8.divineapi.com';
   static const String hostPdfReports = 'https://pdf.divineapi.com';
+
+  /// Supported 25 DivineAPI Tarot / Translator language codes:
+  static const Set<String> supportedLanguageCodes = {
+    'en', // English
+    'hi', // Hindi
+    'zh', // Chinese
+    'ja', // Japanese
+    'ar', // Arabic
+    'ru', // Russian
+    'pt', // Portuguese
+    'es', // Spanish
+    'fr', // French
+    'de', // German
+    'it', // Italian
+    'nl', // Dutch
+    'pl', // Polish
+    'tr', // Turkish
+    'uk', // Ukrainian
+    'hu', // Hungarian
+    'gr', // Greek
+    'bn', // Bengali
+    'ma', // Marathi
+    'tm', // Tamil
+    'tl', // Telugu
+    'ml', // Malayalam
+    'kn', // Kannada
+    'ta', // Filipino / Tagalog
+    'bah', // Indonesian
+  };
+
+  /// Mapping from standard ISO language codes to DivineAPI language codes.
+  static const Map<String, String> _isoToDivineLanguageMap = {
+    'el': 'gr', // Greek
+    'mr': 'ma', // Marathi
+    'ta': 'tm', // Tamil
+    'te': 'tl', // Telugu
+    'id': 'bah', // Indonesian
+  };
+
+  /// Validate and resolve any input language code to a valid DivineAPI language code.
+  /// Falls back to 'en' if null, empty, or unsupported.
+  static String resolveLanguageCode(String? language) {
+    if (language == null || language.trim().isEmpty) {
+      return 'en';
+    }
+    final cleanCode = language.trim().toLowerCase();
+
+    // Direct match with DivineAPI code
+    if (supportedLanguageCodes.contains(cleanCode)) {
+      return cleanCode;
+    }
+
+    // Match ISO code to DivineAPI code
+    if (_isoToDivineLanguageMap.containsKey(cleanCode)) {
+      return _isoToDivineLanguageMap[cleanCode]!;
+    }
+
+    // Fallback for unsupported language codes
+    return 'en';
+  }
+
+  /// Enable/disable translator host (set DIVINE_API_ENABLE_TRANSLATOR=false in .env for Free Trial keys).
+  static bool get enableTranslator {
+    try {
+      if (!dotenv.isInitialized) return true;
+      return (dotenv.env['DIVINE_API_ENABLE_TRANSLATOR'] ?? 'true')
+              .toLowerCase() ==
+          'true';
+    } catch (_) {
+      return true;
+    }
+  }
+
+  /// Resolve host domain dynamically based on language code.
+  /// English ('en') or Free Trial mode -> hostEnglish (https://astroapi-5.divineapi.com)
+  /// Non-English -> hostTranslator (https://astroapi-5-translator.divineapi.com)
+  static String getHostForLanguage(String? language) {
+    final code = resolveLanguageCode(language);
+    if (code == 'en' || !enableTranslator) {
+      return hostEnglish;
+    }
+    return hostTranslator;
+  }
 
   /// API key loaded from .env file.
   static String get apiKey => dotenv.env['DIVINE_API_KEY'] ?? '';
