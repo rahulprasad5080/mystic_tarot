@@ -25,15 +25,19 @@ class MysticTarotApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(localeProvider);
     final isFirstLaunch = ref.watch(isFirstLaunchProvider);
+    final authService = ref.watch(authServiceProvider);
     final authState = ref.watch(authStateProvider);
+    final currentUser = authService.currentUser;
 
     final String initialRoute = isFirstLaunch
         ? '/language'
-        : (authState.when(
-            data: (user) => user != null ? '/home' : '/login',
-            loading: () => '/login',
-            error: (_, __) => '/login',
-          ));
+        : (currentUser != null
+            ? '/home'
+            : authState.when(
+                data: (user) => user != null ? '/home' : '/login',
+                loading: () => '/home', // default to home while checking if token exists
+                error: (_, __) => '/login',
+              ));
 
     return MaterialApp(
       title: 'Ably Tarot Card Reading',
