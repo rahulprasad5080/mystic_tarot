@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'home_screen.dart';
-import 'saved_readings_screen.dart';
 import 'settings_screen.dart';
 
-/// Main Shell Screen managing tab switching (Home, Saved, Settings)
+/// Main Shell Screen managing tab switching (Home, Settings)
 /// using a unified persistent BottomNavigationBar and IndexedStack.
 class MainScreen extends StatefulWidget {
   final int initialIndex;
@@ -24,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _currentIndex = widget.initialIndex;
+    _currentIndex = widget.initialIndex.clamp(0, 1);
   }
 
   @override
@@ -32,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialIndex != widget.initialIndex) {
       setState(() {
-        _currentIndex = widget.initialIndex;
+        _currentIndex = widget.initialIndex.clamp(0, 1);
       });
     }
   }
@@ -44,7 +43,6 @@ class _MainScreenState extends State<MainScreen> {
         index: _currentIndex,
         children: const [
           HomeScreen(),
-          SavedReadingsScreen(),
           SettingsScreen(),
         ],
       ),
@@ -78,11 +76,6 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home_rounded),
               label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bookmark_border_rounded),
-              activeIcon: Icon(Icons.bookmark_rounded),
-              label: 'Saved',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings_outlined),

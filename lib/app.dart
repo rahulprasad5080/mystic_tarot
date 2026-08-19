@@ -73,13 +73,9 @@ class MysticTarotApp extends ConsumerWidget {
             return MaterialPageRoute(
               builder: (_) => const MainScreen(initialIndex: 0),
             );
-          case '/saved':
-            return MaterialPageRoute(
-              builder: (_) => const MainScreen(initialIndex: 1),
-            );
           case '/settings':
             return MaterialPageRoute(
-              builder: (_) => const MainScreen(initialIndex: 2),
+              builder: (_) => const MainScreen(initialIndex: 1),
             );
           case '/loading':
             return MaterialPageRoute(
