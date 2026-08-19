@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'data/services/ad_service.dart';
 import 'app.dart';
 import 'state/providers/locale_provider.dart';
 
@@ -22,6 +23,9 @@ void main() async {
   } catch (e) {
     debugPrint('Firebase initialization note: $e');
   }
+
+  // Initialize Google Mobile Ads SDK
+  await AdService.instance.initialize();
 
   // Initialize SharedPreferences for language preference
   final prefs = await SharedPreferences.getInstance();

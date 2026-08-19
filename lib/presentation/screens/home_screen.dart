@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/constants/reading_types.dart';
 import '../../core/l10n/generated/app_localizations.dart';
 import '../../state/providers/auth_provider.dart';
+import '../../data/services/ad_service.dart';
 
 /// Main home screen matching the exact design of the Divine Readings app mockup.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -16,22 +17,27 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _onReadingTap(ReadingType reading) {
-    if (reading.category == ReadingCategory.horoscope ||
-        reading.inputType == ReadingInputType.signSelect) {
-      Navigator.of(context).pushNamed('/horoscope');
-    } else if (reading.id == 'daily_tarot') {
-      Navigator.of(context).pushNamed('/daily-tarot');
-    } else if (reading.inputType == ReadingInputType.twoSigns) {
-      Navigator.of(context).pushNamed(
-        '/compatibility-input',
-        arguments: reading,
-      );
-    } else {
-      Navigator.of(context).pushNamed(
-        '/reading-input',
-        arguments: reading,
-      );
-    }
+    AdService.instance.showInterstitialAd(
+      onAdDismissed: () {
+        if (!mounted) return;
+        if (reading.category == ReadingCategory.horoscope ||
+            reading.inputType == ReadingInputType.signSelect) {
+          Navigator.of(context).pushNamed('/horoscope');
+        } else if (reading.id == 'daily_tarot') {
+          Navigator.of(context).pushNamed('/daily-tarot');
+        } else if (reading.inputType == ReadingInputType.twoSigns) {
+          Navigator.of(context).pushNamed(
+            '/compatibility-input',
+            arguments: reading,
+          );
+        } else {
+          Navigator.of(context).pushNamed(
+            '/reading-input',
+            arguments: reading,
+          );
+        }
+      },
+    );
   }
 
   /// Map localized or fallback names for each reading type

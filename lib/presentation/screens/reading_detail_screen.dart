@@ -16,6 +16,7 @@ import '../widgets/gradient_header.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/loading_shimmer.dart';
 import '../widgets/error_retry_widget.dart';
+import '../widgets/ad_banner_widget.dart';
 
 /// Generic reading detail screen — displays results from any reading type.
 /// Accepts a ReadingType and optional params (cardImage, signs).
@@ -206,7 +207,12 @@ class ReadingDetailScreen extends ConsumerWidget {
             Text(data.category!, style: AppTextStyles.bodySmall),
           ],
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
+
+          // Native/Banner Ad placed between card area and reading
+          const AdBannerWidget(),
+
+          const SizedBox(height: 12),
 
           // Reading text
           if (data.displayText.isNotEmpty)
