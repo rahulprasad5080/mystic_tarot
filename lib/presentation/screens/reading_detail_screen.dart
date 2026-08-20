@@ -237,11 +237,7 @@ class ReadingDetailScreen extends ConsumerWidget {
             const SizedBox(height: 28),
           ],
 
-          // 3. Native Ad Widget (Placed above text)
-          const NativeAdWidget(),
-          const SizedBox(height: 20),
-
-          // 4. Divine Insight Box (Text placed below ad)
+          // 3. Divine Insight Box
           if (data.displayText.isNotEmpty)
             _buildDivineInsightCard(
               title: 'Divine Insight',
@@ -273,6 +269,11 @@ class ReadingDetailScreen extends ConsumerWidget {
               icon: Icons.work_outline_rounded,
             ),
           ],
+
+          const SizedBox(height: 24),
+
+          // 4. Native Ad Widget (Placed at bottom below all reading content)
+          const NativeAdWidget(),
         ],
       ),
     );

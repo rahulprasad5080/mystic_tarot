@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/constants/reading_types.dart';
 import '../../core/l10n/generated/app_localizations.dart';
-import '../widgets/native_ad_widget.dart';
 
 /// Card selection screen matching the exact UI design mockup:
 /// - Light celestial background with soft light blue cards.
@@ -291,12 +290,6 @@ class _CardSelectScreenState extends State<CardSelectScreen>
                         );
                       },
                     ),
-                  ),
-
-                  // Native Ad Unit
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: NativeAdWidget(),
                   ),
 
                   // Reveal Reading Button
