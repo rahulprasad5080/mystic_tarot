@@ -603,6 +603,8 @@ class ReadingDetailScreen extends ConsumerWidget {
               title: 'Divine Insight',
               content: data.displayText,
             ),
+          const SizedBox(height: 24),
+          const NativeAdWidget(),
         ],
       ),
     );
@@ -710,6 +712,8 @@ class ReadingDetailScreen extends ConsumerWidget {
               icon: Icons.event_rounded,
             ),
           ],
+          const SizedBox(height: 24),
+          const NativeAdWidget(),
         ],
       ),
     );
@@ -751,6 +755,8 @@ class ReadingDetailScreen extends ConsumerWidget {
               Icons.schedule_rounded,
             ),
           ],
+          const SizedBox(height: 24),
+          const NativeAdWidget(),
         ],
       ),
     );
@@ -872,6 +878,8 @@ class ReadingDetailScreen extends ConsumerWidget {
               icon: Icons.favorite_border_rounded,
             ),
           ],
+          const SizedBox(height: 24),
+          const NativeAdWidget(),
         ],
       ),
     );
@@ -918,6 +926,8 @@ class ReadingDetailScreen extends ConsumerWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 24),
+              const NativeAdWidget(),
             ],
           ),
         ),
