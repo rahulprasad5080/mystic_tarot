@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/reading_types.dart';
+import '../../data/models/user_profile.dart';
+import '../../data/services/user_profile_service.dart';
+import '../../state/providers/locale_provider.dart';
 import '../widgets/native_ad_widget.dart';
 
 /// Screen for entering user details (question, name, DOB, gender, sign)
-/// before running a Tarot reading, matching the exact UI mockup design.
-class ReadingInputScreen extends StatefulWidget {
+/// before running a Tarot reading, with support for:
+/// 1. Optional Question input (move to next step with or without asking a question).
+/// 2. Profile memory (saves up to 5 profiles so users fill once and switch easily).
+class ReadingInputScreen extends ConsumerStatefulWidget {
   final ReadingType readingType;
 
   const ReadingInputScreen({
@@ -14,36 +21,105 @@ class ReadingInputScreen extends StatefulWidget {
   });
 
   @override
-  State<ReadingInputScreen> createState() => _ReadingInputScreenState();
+  ConsumerState<ReadingInputScreen> createState() => _ReadingInputScreenState();
 }
 
-class _ReadingInputScreenState extends State<ReadingInputScreen> {
+class _ReadingInputScreenState extends ConsumerState<ReadingInputScreen> {
   final _questionController = TextEditingController();
   final _nameController = TextEditingController();
   final _dobController = TextEditingController();
-  
+
   String? _selectedGender;
   String? _selectedZodiacSign;
 
-  String? _questionError;
   String? _nameError;
   String? _dobError;
   String? _genderError;
   String? _zodiacError;
 
+  List<UserProfile> _profiles = UserProfileService.defaultProfiles;
+  int _activeProfileIndex = 0;
+  SharedPreferences? _prefs;
+
   @override
   void initState() {
     super.initState();
-    _questionController.addListener(() {
-      if (_questionError != null && _questionController.text.trim().isNotEmpty) {
-        setState(() => _questionError = null);
-      }
-    });
+    _initProfiles();
+
     _nameController.addListener(() {
       if (_nameError != null && _nameController.text.trim().isNotEmpty) {
         setState(() => _nameError = null);
       }
+      _updateActiveProfileInMemory();
     });
+  }
+
+  Future<void> _initProfiles() async {
+    try {
+      final prefs = ref.read(sharedPreferencesProvider);
+      _prefs = prefs;
+    } catch (_) {
+      _prefs = await SharedPreferences.getInstance();
+    }
+    if (_prefs != null) {
+      final service = UserProfileService(_prefs!);
+      final loaded = service.loadProfiles();
+      final activeId = service.loadActiveProfileId();
+      int activeIndex = loaded.indexWhere((p) => p.id == activeId);
+      if (activeIndex < 0) activeIndex = 0;
+
+      setState(() {
+        _profiles = loaded;
+        _activeProfileIndex = activeIndex;
+        _populateFieldsFromProfile(loaded[activeIndex]);
+      });
+    }
+  }
+
+  void _populateFieldsFromProfile(UserProfile profile) {
+    _nameController.text = profile.name;
+    _dobController.text = profile.dob;
+    _selectedGender = profile.gender;
+    _selectedZodiacSign = profile.zodiacSign;
+  }
+
+  void _updateActiveProfileInMemory() {
+    if (_profiles.isEmpty) return;
+    final updated = _profiles[_activeProfileIndex].copyWith(
+      name: _nameController.text,
+      dob: _dobController.text,
+      gender: _selectedGender,
+      zodiacSign: _selectedZodiacSign,
+    );
+    _profiles[_activeProfileIndex] = updated;
+    _saveProfilesToPrefs();
+  }
+
+  Future<void> _saveProfilesToPrefs() async {
+    if (_prefs == null) return;
+    final service = UserProfileService(_prefs!);
+    final activeId = _profiles[_activeProfileIndex].id;
+    await service.saveProfiles(_profiles, activeId);
+  }
+
+  void _switchProfile(int newIndex) {
+    if (newIndex == _activeProfileIndex) return;
+
+    // Save current active profile values first
+    _updateActiveProfileInMemory();
+
+    setState(() {
+      _activeProfileIndex = newIndex;
+      _populateFieldsFromProfile(_profiles[newIndex]);
+
+      // Clear field errors on switch
+      _nameError = null;
+      _dobError = null;
+      _genderError = null;
+      _zodiacError = null;
+    });
+
+    _saveProfilesToPrefs();
   }
 
   @override
@@ -79,6 +155,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
             "${picked.month.toString().padLeft(2, '0')}/${picked.day.toString().padLeft(2, '0')}/${picked.year}";
         _dobError = null;
       });
+      _updateActiveProfileInMemory();
     }
   }
 
@@ -144,6 +221,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                         _selectedGender = gender;
                         _genderError = null;
                       });
+                      _updateActiveProfileInMemory();
                       Navigator.pop(ctx);
                     },
                     borderRadius: BorderRadius.circular(12),
@@ -273,6 +351,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                           _selectedZodiacSign = sign;
                           _zodiacError = null;
                         });
+                        _updateActiveProfileInMemory();
                         Navigator.pop(ctx);
                       },
                       borderRadius: BorderRadius.circular(12),
@@ -362,25 +441,20 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
   }
 
   void _startReading() {
-    final question = _questionController.text.trim();
+    // Note: Question is completely optional! Move to next step whether question is entered or not.
     final name = _nameController.text.trim();
     final dob = _dobController.text.trim();
     final gender = _selectedGender;
     final sign = _selectedZodiacSign;
 
     setState(() {
-      _questionError = question.isEmpty ? 'Please enter your question' : null;
-      _nameError = name.isEmpty ? 'Please enter your full name' : null;
+      _nameError = name.isEmpty ? 'Please enter full name' : null;
       _dobError = dob.isEmpty ? 'Please select date of birth' : null;
       _genderError = gender == null ? 'Please select gender' : null;
       _zodiacError = sign == null ? 'Please select zodiac sign' : null;
     });
 
-    if (question.isEmpty ||
-        name.isEmpty ||
-        dob.isEmpty ||
-        gender == null ||
-        sign == null) {
+    if (name.isEmpty || dob.isEmpty || gender == null || sign == null) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -390,7 +464,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
               SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Please fill in all required fields to continue.',
+                  'Please complete profile details to continue.',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
@@ -411,6 +485,9 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
       );
       return;
     }
+
+    // Save profile details for future readings
+    _updateActiveProfileInMemory();
 
     if (widget.readingType.inputType == ReadingInputType.cardSelect) {
       Navigator.of(context).pushNamed(
@@ -467,7 +544,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                     ),
                   ),
 
-                  // Empty right space to keep header centered (Profile icon removed)
+                  // Empty right space to keep header centered
                   const SizedBox(width: 36),
                 ],
               ),
@@ -548,16 +625,109 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // 1. Your Question
-                          _buildFieldLabel('Your Question'),
+                          // Saved Profiles Section (Up to 5 people)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text(
+                                'Saved Profiles',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF101828),
+                                ),
+                              ),
+                              Text(
+                                'Save for up to 5 people',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF667085),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+
+                          // Profile Selection Pills
+                          SizedBox(
+                            height: 40,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: 5,
+                              separatorBuilder: (_, _) => const SizedBox(width: 8),
+                              itemBuilder: (context, index) {
+                                final profile = _profiles.length > index
+                                    ? _profiles[index]
+                                    : UserProfile(id: '${index + 1}', name: 'Person ${index + 1}', dob: '');
+                                final isSelected = index == _activeProfileIndex;
+                                final displayName = profile.name.trim().isNotEmpty
+                                    ? profile.name.trim()
+                                    : 'Person ${index + 1}';
+
+                                return InkWell(
+                                  onTap: () => _switchProfile(index),
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? const Color(0xFF006884)
+                                          : const Color(0xFFF9FAFB),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? const Color(0xFF006884)
+                                            : const Color(0xFFEAECF0),
+                                        width: isSelected ? 1.5 : 1.0,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          isSelected ? Icons.person_rounded : Icons.person_outline_rounded,
+                                          size: 16,
+                                          color: isSelected ? Colors.white : const Color(0xFF475467),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          displayName,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                                            color: isSelected ? Colors.white : const Color(0xFF344054),
+                                          ),
+                                        ),
+                                        if (profile.hasData && !isSelected) ...[
+                                          const SizedBox(width: 4),
+                                          Container(
+                                            width: 6,
+                                            height: 6,
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFF12B76A),
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          // 1. Your Question (Optional)
+                          _buildFieldLabel('Your Question (Optional)'),
                           const SizedBox(height: 8),
                           TextField(
                             controller: _questionController,
                             maxLines: 3,
                             style: const TextStyle(fontSize: 14, color: Color(0xFF101828)),
                             decoration: _buildInputDecoration(
-                              'What do you seek clarity on?',
-                              errorText: _questionError,
+                              'What do you seek clarity on? (Optional)',
                             ),
                           ),
                           const SizedBox(height: 18),
@@ -569,7 +739,7 @@ class _ReadingInputScreenState extends State<ReadingInputScreen> {
                             controller: _nameController,
                             style: const TextStyle(fontSize: 14, color: Color(0xFF101828)),
                             decoration: _buildInputDecoration(
-                              'Enter your full name',
+                              'Enter full name',
                               errorText: _nameError,
                             ),
                           ),
