@@ -187,6 +187,29 @@ class DivineApiService {
     return ApiResponse.fromJson(json, FortuneCookieResult.fromJson);
   }
 
+  // ──────────────────── Which Animal Are You ────────────────────────────
+
+  /// Which Animal Are You reading — requires name + birth date fields.
+  Future<ApiResponse<ReadingResult>> getWhichAnimalReading({
+    required String fullName,
+    required int day,
+    required int month,
+    required int year,
+    required String language,
+  }) async {
+    final request = _createRequest(
+      ApiConstants.whichAnimalAreYouReading,
+      language: language,
+    );
+    request.fields['full_name'] = fullName;
+    request.fields['day'] = day.toString();
+    request.fields['month'] = month.toString();
+    request.fields['year'] = year.toString();
+
+    final json = await _sendRequest(request);
+    return ApiResponse.fromJson(json, ReadingResult.fromJson);
+  }
+
   /// Dispose the HTTP client.
   void dispose() {
     _client.close();

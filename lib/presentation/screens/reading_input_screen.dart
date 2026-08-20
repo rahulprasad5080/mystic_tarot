@@ -421,8 +421,8 @@ class _ReadingInputScreenState extends ConsumerState<ReadingInputScreen> {
       'divine_angel': 'Divine Angel Reading',
       'daily_tarot': 'Daily Tarot',
       'dream_come_true': 'Dream Come True Reading',
-      'fortune_cookie': 'Which Animal Are You Reading',
-      'past_lives_connection': 'Past-Present-Future Reading',
+      'which_animal': 'Which Animal Are You Reading',
+      'past_present_future': 'Past-Present-Future Reading',
       'flirt_love': 'Flirt Love Reading',
       'erotic_love': 'Erotic Love Reading',
       'egyptian_prediction': 'Egyptian Prediction',
@@ -433,9 +433,9 @@ class _ReadingInputScreenState extends ConsumerState<ReadingInputScreen> {
       'career_daily': 'Career Daily Reading',
       'heartbreak': 'Heartbreak Reading',
       'love_triangle': 'Love Triangle Reading',
-      'coffee_cup': 'Wisdom Reading',
+      'wisdom': 'Wisdom Reading',
       'divine_magic': 'Divine Magic Reading',
-      'love_compatibility': 'Past Lives Connection Reading',
+      'past_lives_connection': 'Past Lives Connection Reading',
     };
     return map[reading.id] ?? reading.id;
   }

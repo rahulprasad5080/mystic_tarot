@@ -168,6 +168,33 @@ class ReadingRepository {
     return response;
   }
 
+  /// Get Which Animal Are You reading with automatic translation if needed.
+  Future<ApiResponse<ReadingResult>> getWhichAnimalReading({
+    required String fullName,
+    required int day,
+    required int month,
+    required int year,
+    required String language,
+  }) async {
+    final response = await _apiService.getWhichAnimalReading(
+      fullName: fullName,
+      day: day,
+      month: month,
+      year: year,
+      language: ApiConstants.enableTranslator ? language : 'en',
+    );
+
+    if (response.isSuccess && response.data != null && language.toLowerCase() != 'en') {
+      final translatedData = await _translateReadingResult(response.data!, language);
+      return ApiResponse<ReadingResult>(
+        success: response.success,
+        data: translatedData,
+        message: response.message,
+      );
+    }
+    return response;
+  }
+
   /// Convenience method: dispatch a reading by its ReadingType definition.
   Future<ApiResponse<dynamic>> getReading({
     required ReadingType readingType,
@@ -177,6 +204,16 @@ class ReadingRepository {
     String? sign2,
     String? sign,
   }) {
+    if (readingType.endpoint == ApiConstants.whichAnimalAreYouReading) {
+      return getWhichAnimalReading(
+        fullName: 'Friend',
+        day: 15,
+        month: 8,
+        year: 1995,
+        language: language,
+      );
+    }
+
     if (readingType.endpoint == ApiConstants.loveCompatibility) {
       return getLoveCompatibility(
         sign1: sign1 ?? 'Aries',
