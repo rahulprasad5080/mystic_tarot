@@ -210,6 +210,21 @@ class DivineApiService {
     return ApiResponse.fromJson(json, ReadingResult.fromJson);
   }
 
+  // ──────────────────── Past Present Future ────────────────────────────
+
+  /// Past Present Future reading — 3 temporal cards (past, present, future).
+  Future<ApiResponse<PastPresentFutureResult>> getPastPresentFutureReading({
+    required String language,
+  }) async {
+    final request = _createRequest(
+      ApiConstants.pastPresentFutureReading,
+      language: language,
+    );
+
+    final json = await _sendRequest(request);
+    return ApiResponse.fromJson(json, PastPresentFutureResult.fromJson);
+  }
+
   /// Dispose the HTTP client.
   void dispose() {
     _client.close();

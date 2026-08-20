@@ -179,6 +179,8 @@ class ReadingDetailScreen extends ConsumerWidget {
       return _buildTriangleResult(context, data);
     } else if (data is FortuneCookieResult) {
       return _buildFortuneCookieResult(context, data);
+    } else if (data is PastPresentFutureResult) {
+      return _buildPastPresentFutureResult(context, data);
     }
 
     return Center(
@@ -926,6 +928,154 @@ class ReadingDetailScreen extends ConsumerWidget {
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  // ─────────── Past Present Future ───────────
+
+  Widget _buildPastPresentFutureResult(
+    BuildContext context,
+    PastPresentFutureResult data,
+  ) {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          if (data.past != null)
+            _buildPastPresentFutureSection(
+              'Past',
+              data.past!,
+              Icons.history_rounded,
+            ),
+          if (data.present != null) ...[
+            const SizedBox(height: 20),
+            _buildPastPresentFutureSection(
+              'Present',
+              data.present!,
+              Icons.radio_button_checked_rounded,
+            ),
+          ],
+          if (data.future != null) ...[
+            const SizedBox(height: 20),
+            _buildPastPresentFutureSection(
+              'Future',
+              data.future!,
+              Icons.update_rounded,
+            ),
+          ],
+          const SizedBox(height: 24),
+          const NativeAdWidget(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPastPresentFutureSection(
+    String period,
+    PastPresentFutureCard cardData,
+    IconData headerIcon,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(headerIcon, color: const Color(0xFF0E697E), size: 22),
+              const SizedBox(width: 8),
+              Text(
+                '$period - ${cardData.card ?? ''}',
+                style: const TextStyle(
+                  color: Color(0xFF0E697E),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (cardData.image != null)
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: CachedNetworkImage(
+                  imageUrl: cardData.image!,
+                  height: 220,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    height: 220,
+                    width: 150,
+                    color: const Color(0xFFF1F5F9),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF38BDF8),
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (cardData.image != null) const SizedBox(height: 16),
+          if (cardData.summary != null && cardData.summary!.isNotEmpty)
+            Text(
+              cardData.summary!,
+              style: const TextStyle(
+                color: Color(0xFF475569),
+                fontSize: 14,
+                height: 1.6,
+              ),
+            ),
+          if (cardData.advice != null && cardData.advice!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F9FF),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFBAE6FD)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.lightbulb_outline_rounded,
+                    color: Color(0xFF0284C7),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      cardData.advice!,
+                      style: const TextStyle(
+                        color: Color(0xFF0369A1),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -195,6 +195,25 @@ class ReadingRepository {
     return response;
   }
 
+  /// Get Past Present Future reading with automatic translation if needed.
+  Future<ApiResponse<PastPresentFutureResult>> getPastPresentFutureReading({
+    required String language,
+  }) async {
+    final response = await _apiService.getPastPresentFutureReading(
+      language: ApiConstants.enableTranslator ? language : 'en',
+    );
+
+    if (response.isSuccess && response.data != null && language.toLowerCase() != 'en') {
+      final translatedData = await _translatePastPresentFuture(response.data!, language);
+      return ApiResponse<PastPresentFutureResult>(
+        success: response.success,
+        data: translatedData,
+        message: response.message,
+      );
+    }
+    return response;
+  }
+
   /// Convenience method: dispatch a reading by its ReadingType definition.
   Future<ApiResponse<dynamic>> getReading({
     required ReadingType readingType,
@@ -204,6 +223,10 @@ class ReadingRepository {
     String? sign2,
     String? sign,
   }) {
+    if (readingType.endpoint == ApiConstants.pastPresentFutureReading) {
+      return getPastPresentFutureReading(language: language);
+    }
+
     if (readingType.endpoint == ApiConstants.whichAnimalAreYouReading) {
       return getWhichAnimalReading(
         fullName: 'Friend',
@@ -335,6 +358,25 @@ class ReadingRepository {
   Future<FortuneCookieResult> _translateFortuneCookie(FortuneCookieResult res, String lang) async {
     return FortuneCookieResult(
       result: await TranslationService.translate(res.result, lang),
+    );
+  }
+
+  Future<PastPresentFutureResult> _translatePastPresentFuture(PastPresentFutureResult res, String lang) async {
+    Future<PastPresentFutureCard?> translateCard(PastPresentFutureCard? c) async {
+      if (c == null) return null;
+      return PastPresentFutureCard(
+        card: c.card,
+        image: c.image,
+        summary: await TranslationService.translate(c.summary, lang),
+        keywords: c.keywords,
+        advice: await TranslationService.translate(c.advice, lang),
+      );
+    }
+
+    return PastPresentFutureResult(
+      past: await translateCard(res.past),
+      present: await translateCard(res.present),
+      future: await translateCard(res.future),
     );
   }
 }

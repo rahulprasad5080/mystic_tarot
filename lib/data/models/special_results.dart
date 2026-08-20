@@ -62,3 +62,65 @@ class FortuneCookieResult {
     );
   }
 }
+
+/// Single card entry inside Past-Present-Future reading.
+class PastPresentFutureCard {
+  final String? card;
+  final String? image;
+  final String? summary;
+  final List<String> keywords;
+  final String? advice;
+
+  const PastPresentFutureCard({
+    this.card,
+    this.image,
+    this.summary,
+    this.keywords = const [],
+    this.advice,
+  });
+
+  factory PastPresentFutureCard.fromJson(Map<String, dynamic> json) {
+    final rawKeywords = json['keywords'];
+    final List<String> parsedKeywords = rawKeywords is List
+        ? rawKeywords.map((e) => e.toString()).toList()
+        : [];
+
+    return PastPresentFutureCard(
+      card: JsonUtils.parseString(json['card']),
+      image: JsonUtils.parseString(json['image']),
+      summary: JsonUtils.parseString(json['summary']),
+      keywords: parsedKeywords,
+      advice: JsonUtils.parseString(json['advice']),
+    );
+  }
+}
+
+/// Model for Past-Present-Future reading result (3 temporal cards: past, present, future).
+class PastPresentFutureResult {
+  final PastPresentFutureCard? past;
+  final PastPresentFutureCard? present;
+  final PastPresentFutureCard? future;
+
+  const PastPresentFutureResult({
+    this.past,
+    this.present,
+    this.future,
+  });
+
+  factory PastPresentFutureResult.fromJson(Map<String, dynamic> json) {
+    final rawPred = json['prediction'];
+    final Map<String, dynamic> prediction = rawPred is Map
+        ? JsonUtils.parseMap(rawPred)
+        : json;
+
+    final pastMap = prediction['past'] is Map ? JsonUtils.parseMap(prediction['past']) : null;
+    final presentMap = prediction['present'] is Map ? JsonUtils.parseMap(prediction['present']) : null;
+    final futureMap = prediction['future'] is Map ? JsonUtils.parseMap(prediction['future']) : null;
+
+    return PastPresentFutureResult(
+      past: pastMap != null ? PastPresentFutureCard.fromJson(pastMap) : null,
+      present: presentMap != null ? PastPresentFutureCard.fromJson(presentMap) : null,
+      future: futureMap != null ? PastPresentFutureCard.fromJson(futureMap) : null,
+    );
+  }
+}
