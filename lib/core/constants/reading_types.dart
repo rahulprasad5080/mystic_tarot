@@ -213,6 +213,7 @@ class ReadingTypes {
       icon: Icons.auto_awesome_rounded,
       accentColor: AppColors.accentBlueDark,
       category: ReadingCategory.spiritual,
+      inputType: ReadingInputType.cardSelect,
     ),
     ReadingType(
       id: 'divine_magic',

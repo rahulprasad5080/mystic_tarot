@@ -275,7 +275,8 @@ class ReadingRepository {
     }
 
     if (readingType.endpoint == ApiConstants.heartbreakReading ||
-        readingType.endpoint == ApiConstants.divineMagicReading) {
+        readingType.endpoint == ApiConstants.divineMagicReading ||
+        readingType.endpoint == ApiConstants.wisdomReading) {
       return getDualCardReading(
         endpoint: readingType.endpoint,
         cardImage: cardImage ?? '1',
