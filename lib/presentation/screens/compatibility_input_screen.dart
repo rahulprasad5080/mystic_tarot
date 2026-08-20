@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/reading_types.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/text_styles.dart';
 import '../../core/l10n/generated/app_localizations.dart';
-import '../widgets/mystical_background.dart';
-import '../widgets/gradient_header.dart';
-import '../widgets/glass_card.dart';
 
-/// Screen to select two zodiac signs for Love Compatibility reading.
+/// Zodiac sign color model for soft pastel circles and symbol colors
+class ZodiacVisual {
+  final String symbol;
+  final Color bg;
+  final Color symbolColor;
+
+  const ZodiacVisual({
+    required this.symbol,
+    required this.bg,
+    required this.symbolColor,
+  });
+}
+
+/// Screen to select two zodiac signs for Love Compatibility & Past Lives Connection readings,
+/// matching the exact design of the Zodiac selection mockup.
 class CompatibilityInputScreen extends StatefulWidget {
   final ReadingType readingType;
 
@@ -23,122 +32,230 @@ class _CompatibilityInputScreenState extends State<CompatibilityInputScreen> {
   String _sign1 = 'Aries';
   String _sign2 = 'Aries';
 
+  static const Map<String, ZodiacVisual> _zodiacVisuals = {
+    'Aries': ZodiacVisual(
+      symbol: '♈',
+      bg: Color(0xFFFFE4E6),
+      symbolColor: Color(0xFFE11D48),
+    ),
+    'Taurus': ZodiacVisual(
+      symbol: '♉',
+      bg: Color(0xFFFFEDD5),
+      symbolColor: Color(0xFFEA580C),
+    ),
+    'Gemini': ZodiacVisual(
+      symbol: '♊',
+      bg: Color(0xFFFEF08A),
+      symbolColor: Color(0xFFCA8A04),
+    ),
+    'Cancer': ZodiacVisual(
+      symbol: '♋',
+      bg: Color(0xFFFEF9C3),
+      symbolColor: Color(0xFFD97706),
+    ),
+    'Leo': ZodiacVisual(
+      symbol: '♌',
+      bg: Color(0xFFFDE68A),
+      symbolColor: Color(0xFFB45309),
+    ),
+    'Virgo': ZodiacVisual(
+      symbol: '♍',
+      bg: Color(0xFFDCFCE7),
+      symbolColor: Color(0xFF16A34A),
+    ),
+    'Libra': ZodiacVisual(
+      symbol: '♎',
+      bg: Color(0xFFCCFBF1),
+      symbolColor: Color(0xFF0D9488),
+    ),
+    'Scorpio': ZodiacVisual(
+      symbol: '♏',
+      bg: Color(0xFFE0F2FE),
+      symbolColor: Color(0xFF0284C7),
+    ),
+    'Sagittarius': ZodiacVisual(
+      symbol: '♐',
+      bg: Color(0xFFE0E7FF),
+      symbolColor: Color(0xFF4F46E5),
+    ),
+    'Capricorn': ZodiacVisual(
+      symbol: '♑',
+      bg: Color(0xFFF3E8FF),
+      symbolColor: Color(0xFF7E22CE),
+    ),
+    'Aquarius': ZodiacVisual(
+      symbol: '♒',
+      bg: Color(0xFFEBF5FF),
+      symbolColor: Color(0xFF006884),
+    ),
+    'Pisces': ZodiacVisual(
+      symbol: '♓',
+      bg: Color(0xFFFCE7F3),
+      symbolColor: Color(0xFFDB2777),
+    ),
+  };
+
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    const backgroundColor = Color(0xFFEAF5FE);
 
     return Scaffold(
-      body: MysticalBackground(
+      backgroundColor: backgroundColor,
+      body: SafeArea(
         child: Column(
           children: [
-            // Gradient header
-            GradientHeader(
-              title: l10n.selectSigns,
-              onBack: () => Navigator.of(context).pop(),
+            // Top Navigation Bar matching design
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Back Button
+                  InkWell(
+                    onTap: () => Navigator.of(context).pop(),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF101828),
+                        size: 22,
+                      ),
+                    ),
+                  ),
+
+                  // Header Title uppercase
+                  Text(
+                    l10n?.selectSigns.toUpperCase() ?? 'SELECT ZODIAC SIGNS',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF101828),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+
+                  const SizedBox(width: 36),
+                ],
+              ),
             ),
 
-            // Content below the header
+            // Main Body Content
             Expanded(
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                      child: Text(
-                        l10n.selectSignsDesc,
-                        style: AppTextStyles.bodySmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 8),
 
-                    const SizedBox(height: 20),
-
-                    // Pickers
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          children: [
-                            // Sign 1 Picker
-                            _buildSignPickerCard(
-                              title: l10n.yourSign,
-                              selectedSign: _sign1,
-                              onSignSelected: (sign) =>
-                                  setState(() => _sign1 = sign),
-                            ),
-                            const SizedBox(height: 20),
-
-                            // Heart Divider Icon
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color:
-                                    AppColors.categoryLove.withValues(alpha: 0.2),
-                                border: Border.all(
-                                  color: AppColors.categoryLove
-                                      .withValues(alpha: 0.4),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.favorite_rounded,
-                                color: AppColors.categoryLove,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-
-                            // Sign 2 Picker
-                            _buildSignPickerCard(
-                              title: l10n.partnerSign,
-                              selectedSign: _sign2,
-                              onSignSelected: (sign) =>
-                                  setState(() => _sign2 = sign),
-                            ),
-                          ],
+                      // Instruction Subtitle matching exact wording from mockup
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Text(
+                          l10n?.selectSignsDesc ??
+                              'Choose your sign and your partner\'s sign to reveal love compatibility',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF475467),
+                            height: 1.35,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
 
-                    // Calculate Button
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pushReplacementNamed(
-                              '/reading-detail',
-                              arguments: {
-                                'readingType': widget.readingType,
-                                'sign1': _sign1,
-                                'sign2': _sign2,
-                              },
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.accentBlue,
-                            foregroundColor: AppColors.onAccent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
+                      const SizedBox(height: 24),
+
+                      // YOUR SIGN Card Container
+                      _buildSignSectionCard(
+                        title: (l10n?.yourSign ?? 'YOUR SIGN').toUpperCase(),
+                        selectedSign: _sign1,
+                        onSignSelected: (sign) => setState(() => _sign1 = sign),
+                      ),
+
+                      // Floating Pink Heart Badge Divider
+                      Transform.translate(
+                        offset: const Offset(0, 0),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 12.0),
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFFCE7F3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFFEC4899,
+                                ).withValues(alpha: 0.15),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
-                          child: Text(
-                            l10n.calculateCompatibility,
-                            style: AppTextStyles.button.copyWith(
-                              color: AppColors.onAccent,
-                            ),
+                          child: const Icon(
+                            Icons.favorite_rounded,
+                            color: Color(0xFFEC4899),
+                            size: 20,
                           ),
                         ),
                       ),
+
+                      // PARTNER'S SIGN Card Container
+                      _buildSignSectionCard(
+                        title: (l10n?.partnerSign ?? 'PARTNER\'S SIGN')
+                            .toUpperCase(),
+                        selectedSign: _sign2,
+                        onSignSelected: (sign) => setState(() => _sign2 = sign),
+                      ),
+
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Bottom Calculate Action Button
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed(
+                      '/reading-detail',
+                      arguments: {
+                        'readingType': widget.readingType,
+                        'sign1': _sign1,
+                        'sign2': _sign2,
+                      },
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF006884),
+                    foregroundColor: Colors.white,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ],
+                  ),
+                  child: Text(
+                    l10n?.calculateCompatibility ?? 'Calculate Compatibility',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -148,71 +265,128 @@ class _CompatibilityInputScreenState extends State<CompatibilityInputScreen> {
     );
   }
 
-  Widget _buildSignPickerCard({
+  Widget _buildSignSectionCard({
     required String title,
     required String selectedSign,
     required ValueChanged<String> onSignSelected,
   }) {
-    return GlassCard(
-      padding: const EdgeInsets.all(16),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFF2F4F7), width: 1.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Section Title (YOUR SIGN / PARTNER'S SIGN)
           Text(
             title,
-            style: AppTextStyles.cardTitle.copyWith(
-              color: AppColors.accentBlue,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF006884),
+              letterSpacing: 0.8,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+
+          // Scrollable Zodiac Cards Row matching screenshot
           SizedBox(
-            height: 90,
+            height: 110,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: AppConstants.zodiacSigns.length,
               itemBuilder: (context, index) {
                 final sign = AppConstants.zodiacSigns[index];
                 final isSelected = sign == selectedSign;
-                final emoji = AppConstants.zodiacEmojis[sign] ?? '✨';
+                final visual =
+                    _zodiacVisuals[sign] ??
+                    const ZodiacVisual(
+                      symbol: '✨',
+                      bg: Color(0xFFEBF5FF),
+                      symbolColor: Color(0xFF006884),
+                    );
 
                 return Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: GestureDetector(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: InkWell(
                     onTap: () => onSignSelected(sign),
+                    borderRadius: BorderRadius.circular(16),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      width: 70,
+                      width: 82,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 10.0,
+                      ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: isSelected
-                            ? AppColors.primaryBlue.withValues(alpha: 0.3)
-                            : AppColors.backgroundCardLight
-                                .withValues(alpha: 0.5),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isSelected
-                              ? AppColors.accentBlue
-                              : AppColors.primaryBlue.withValues(alpha: 0.2),
-                          width: isSelected ? 2 : 1,
+                              ? const Color(0xFF00A3E0)
+                              : const Color(0xFFEAECF0),
+                          width: isSelected ? 2.5 : 1.0,
                         ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFF00A3E0,
+                                  ).withValues(alpha: 0.25),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : [],
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            emoji,
-                            style: const TextStyle(fontSize: 24),
+                          // Soft Pastel Circle Container with Astrological Symbol
+                          Container(
+                            width: 46,
+                            height: 46,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: visual.bg,
+                            ),
+                            child: Center(
+                              child: Text(
+                                visual.symbol,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: visual.symbolColor,
+                                ),
+                              ),
+                            ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 8),
+
+                          // Zodiac Sign Label Text
                           Text(
                             sign,
-                            style: AppTextStyles.labelSmall.copyWith(
-                              color: isSelected
-                                  ? AppColors.accentBlue
-                                  : AppColors.textPrimary,
+                            style: TextStyle(
+                              fontSize: 12,
                               fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              color: isSelected
+                                  ? const Color(0xFF101828)
+                                  : const Color(0xFF475467),
                             ),
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
