@@ -40,12 +40,17 @@ class ReadingResult {
     }
 
     final rawPred = json['prediction'];
-    final Map<String, dynamic> dataMap = rawPred is Map
-        ? JsonUtils.parseMap(rawPred)
-        : json;
+    Map<String, dynamic> dataMap = {};
+    if (rawPred is Map) {
+      dataMap = JsonUtils.parseMap(rawPred);
+    } else if (rawPred is List && rawPred.isNotEmpty && rawPred.first is Map) {
+      dataMap = JsonUtils.parseMap(rawPred.first);
+    } else {
+      dataMap = json;
+    }
 
     return ReadingResult(
-      card: JsonUtils.parseString(cardData['card'] ?? dataMap['card'] ?? json['card']),
+      card: JsonUtils.parseString(cardData['card'] ?? cardData['animal'] ?? dataMap['card'] ?? dataMap['animal'] ?? json['card'] ?? json['animal']),
       category: JsonUtils.parseString(cardData['category'] ?? dataMap['category'] ?? json['category']),
       yesNo: JsonUtils.parseString(cardData['yes_no'] ?? dataMap['yes_no'] ?? json['yes_no']),
       result: JsonUtils.parseString(cardData['result'] ?? dataMap['result'] ?? json['result']),
