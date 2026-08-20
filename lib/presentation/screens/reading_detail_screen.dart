@@ -282,18 +282,26 @@ class ReadingDetailScreen extends ConsumerWidget {
   }
 
   /// Builds the card container with soft cyan glow and bottom-right sparkle badge overlay.
-  Widget _buildCardDisplay(String url) {
+  Widget _buildCardDisplay(
+    String url, {
+    double? width = 250,
+    double height = 350,
+    double padding = 12,
+  }) {
+    final innerRadius = padding > 8 ? 16.0 : (padding > 5 ? 12.0 : 8.0);
+    final outerRadius = padding > 8 ? 24.0 : (padding > 5 ? 16.0 : 12.0);
+
     return Center(
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           // Outer Card Frame with Soft Blue Glow & Shadow
           Container(
-            width: 250,
-            padding: const EdgeInsets.all(12),
+            width: width,
+            padding: EdgeInsets.all(padding),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(outerRadius),
               border: Border.all(
                 color: const Color(0xFFE2E8F0).withValues(alpha: 0.9),
                 width: 1,
@@ -301,26 +309,26 @@ class ReadingDetailScreen extends ConsumerWidget {
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
-                  blurRadius: 36,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 10),
+                  blurRadius: padding > 8 ? 36 : 16,
+                  spreadRadius: padding > 8 ? 2 : 1,
+                  offset: Offset(0, padding > 8 ? 10 : 4),
                 ),
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
+                  blurRadius: padding > 8 ? 16 : 8,
+                  offset: Offset(0, padding > 8 ? 4 : 2),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(innerRadius),
               child: CachedNetworkImage(
                 imageUrl: url,
-                height: 350,
-                width: 226,
+                height: height,
+                width: width != null ? (width - (padding * 2)) : null,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
-                  height: 350,
+                  height: height,
                   color: const Color(0xFFF1F5F9),
                   child: const Center(
                     child: CircularProgressIndicator(
@@ -334,27 +342,27 @@ class ReadingDetailScreen extends ConsumerWidget {
             ),
           ),
 
-          // Bottom-Right Sparkle Overlay Icon (matches reference design ✨)
+          // Bottom-Right Sparkle Overlay Icon
           Positioned(
-            right: -6,
-            bottom: -6,
+            right: padding > 8 ? -6 : -4,
+            bottom: padding > 8 ? -6 : -4,
             child: Container(
-              padding: const EdgeInsets.all(6),
+              padding: EdgeInsets.all(padding > 8 ? 6 : 4),
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFF38BDF8).withValues(alpha: 0.4),
-                    blurRadius: 10,
+                    blurRadius: padding > 8 ? 10 : 6,
                     spreadRadius: 1,
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.auto_awesome,
-                color: Color(0xFF38BDF8),
-                size: 20,
+                color: const Color(0xFF38BDF8),
+                size: padding > 8 ? 20 : 14,
               ),
             ),
           ),
@@ -541,15 +549,22 @@ class ReadingDetailScreen extends ConsumerWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      _buildCardDisplay(data.card1Image!),
+                      _buildCardDisplay(
+                        data.card1Image!,
+                        height: 220,
+                        padding: 8,
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         data.card1 ?? '',
                         style: const TextStyle(
                           color: Color(0xFF0E697E),
                           fontWeight: FontWeight.bold,
+                          fontSize: 13,
                         ),
                         textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -559,15 +574,22 @@ class ReadingDetailScreen extends ConsumerWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      _buildCardDisplay(data.card2Image!),
+                      _buildCardDisplay(
+                        data.card2Image!,
+                        height: 220,
+                        padding: 8,
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         data.card2 ?? '',
                         style: const TextStyle(
                           color: Color(0xFF0E697E),
                           fontWeight: FontWeight.bold,
+                          fontSize: 13,
                         ),
                         textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -745,13 +767,85 @@ class ReadingDetailScreen extends ConsumerWidget {
           Row(
             children: [
               if (data.card1Image != null)
-                Expanded(child: _buildCardDisplay(data.card1Image!)),
-              const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    children: [
+                      _buildCardDisplay(
+                        data.card1Image!,
+                        height: 155,
+                        padding: 5,
+                      ),
+                      if (data.card1 != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          data.card1!,
+                          style: const TextStyle(
+                            color: Color(0xFF0E697E),
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              const SizedBox(width: 6),
               if (data.card2Image != null)
-                Expanded(child: _buildCardDisplay(data.card2Image!)),
-              const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    children: [
+                      _buildCardDisplay(
+                        data.card2Image!,
+                        height: 155,
+                        padding: 5,
+                      ),
+                      if (data.card2 != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          data.card2!,
+                          style: const TextStyle(
+                            color: Color(0xFF0E697E),
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              const SizedBox(width: 6),
               if (data.card3Image != null)
-                Expanded(child: _buildCardDisplay(data.card3Image!)),
+                Expanded(
+                  child: Column(
+                    children: [
+                      _buildCardDisplay(
+                        data.card3Image!,
+                        height: 155,
+                        padding: 5,
+                      ),
+                      if (data.card3 != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          data.card3!,
+                          style: const TextStyle(
+                            color: Color(0xFF0E697E),
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 20),
