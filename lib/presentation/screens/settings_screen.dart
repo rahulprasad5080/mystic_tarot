@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../state/providers/auth_provider.dart';
 
 /// Premium, sleek Settings screen matching modern design guidelines.
@@ -220,7 +222,7 @@ class SettingsScreen extends ConsumerWidget {
                         _buildSettingsRow(
                           icon: Icons.star_outline_rounded,
                           title: 'Rate App',
-                          onTap: () {},
+                          onTap: () => _openPlayStore(),
                         ),
                         const Divider(height: 1, color: Color(0xFFF2F4F7)),
                         _buildSettingsRow(
@@ -421,5 +423,30 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Directly launches Google Play Store / App Store page for rating.
+  Future<void> _openPlayStore() async {
+    try {
+      final InAppReview inAppReview = InAppReview.instance;
+      if (await inAppReview.isAvailable()) {
+        await inAppReview.openStoreListing();
+        return;
+      }
+    } catch (e) {
+      debugPrint('InAppReview openStoreListing error: $e');
+    }
+
+    // Direct Google Play Store fallback URL
+    final Uri playStoreUri = Uri.parse(
+      'https://play.google.com/store/apps/details?id=com.ably.tarot_card_reading',
+    );
+    try {
+      if (await canLaunchUrl(playStoreUri)) {
+        await launchUrl(playStoreUri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      debugPrint('url_launcher error: $e');
+    }
   }
 }
