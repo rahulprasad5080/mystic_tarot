@@ -9,6 +9,19 @@ class AdService {
 
   InterstitialAd? _interstitialAd;
   bool _isInterstitialLoading = false;
+  DateTime? _lastInterstitialShownTime;
+  Duration interstitialCooldown = const Duration(minutes: 5);
+
+  /// Configure the interstitial ad cooldown duration (default is 5 minutes).
+  void setInterstitialCooldown(Duration duration) {
+    interstitialCooldown = duration;
+  }
+
+  /// Check if the cooldown period has passed since the last interstitial ad.
+  bool get canShowInterstitial {
+    if (_lastInterstitialShownTime == null) return true;
+    return DateTime.now().difference(_lastInterstitialShownTime!) >= interstitialCooldown;
+  }
 
   /// Initialize Mobile Ads SDK.
   Future<void> initialize() async {
@@ -43,9 +56,10 @@ class AdService {
     );
   }
 
-  /// Show Interstitial Ad when user opens an AI Reading option, then execute callback.
+  /// Show Interstitial Ad when user opens an AI Reading option, enforcing frequency capping.
   void showInterstitialAd({required VoidCallback onAdDismissed}) {
-    if (_interstitialAd != null) {
+    if (canShowInterstitial && _interstitialAd != null) {
+      _lastInterstitialShownTime = DateTime.now();
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (ad) {
           ad.dispose();
@@ -62,8 +76,10 @@ class AdService {
       );
       _interstitialAd!.show();
     } else {
-      // Ad was not ready, proceed directly
-      loadInterstitialAd();
+      // Frequency capped (within 5 minutes) or ad not ready - proceed directly without showing ad
+      if (_interstitialAd == null && canShowInterstitial) {
+        loadInterstitialAd();
+      }
       onAdDismissed();
     }
   }
