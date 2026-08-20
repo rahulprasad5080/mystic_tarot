@@ -33,23 +33,29 @@ class ReadingResult {
   });
 
   factory ReadingResult.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> cardData = {};
+    final rawCards = json['cards'];
+    if (rawCards is List && rawCards.isNotEmpty && rawCards.first is Map) {
+      cardData = JsonUtils.parseMap(rawCards.first);
+    }
+
     final rawPred = json['prediction'];
     final Map<String, dynamic> dataMap = rawPred is Map
         ? JsonUtils.parseMap(rawPred)
         : json;
 
     return ReadingResult(
-      card: JsonUtils.parseString(dataMap['card'] ?? json['card']),
-      category: JsonUtils.parseString(dataMap['category'] ?? json['category']),
-      yesNo: JsonUtils.parseString(dataMap['yes_no'] ?? json['yes_no']),
-      result: JsonUtils.parseString(dataMap['result'] ?? json['result']),
-      career: JsonUtils.parseString(dataMap['career'] ?? json['career']),
-      love: JsonUtils.parseString(dataMap['love'] ?? json['love']),
-      finance: JsonUtils.parseString(dataMap['finance'] ?? json['finance']),
-      image: JsonUtils.parseString(dataMap['image'] ?? json['image']),
-      image2: JsonUtils.parseString(dataMap['image2'] ?? json['image2']),
-      image3: JsonUtils.parseString(dataMap['image3'] ?? json['image3']),
-      cardImage: JsonUtils.parseString(dataMap['card_image'] ?? json['card_image']),
+      card: JsonUtils.parseString(cardData['card'] ?? dataMap['card'] ?? json['card']),
+      category: JsonUtils.parseString(cardData['category'] ?? dataMap['category'] ?? json['category']),
+      yesNo: JsonUtils.parseString(cardData['yes_no'] ?? dataMap['yes_no'] ?? json['yes_no']),
+      result: JsonUtils.parseString(cardData['result'] ?? dataMap['result'] ?? json['result']),
+      career: JsonUtils.parseString(cardData['career'] ?? dataMap['career'] ?? json['career']),
+      love: JsonUtils.parseString(cardData['love'] ?? dataMap['love'] ?? json['love']),
+      finance: JsonUtils.parseString(cardData['finance'] ?? dataMap['finance'] ?? json['finance']),
+      image: JsonUtils.parseString(cardData['image'] ?? dataMap['image'] ?? json['image']),
+      image2: JsonUtils.parseString(cardData['image2'] ?? dataMap['image2'] ?? json['image2']),
+      image3: JsonUtils.parseString(cardData['image3'] ?? dataMap['image3'] ?? json['image3']),
+      cardImage: JsonUtils.parseString(cardData['card_image'] ?? dataMap['card_image'] ?? json['card_image']),
     );
   }
 
