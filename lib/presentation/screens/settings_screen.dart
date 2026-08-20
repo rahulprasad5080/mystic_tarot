@@ -228,13 +228,17 @@ class SettingsScreen extends ConsumerWidget {
                         _buildSettingsRow(
                           icon: Icons.privacy_tip_outlined,
                           title: 'Privacy Policy',
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/privacy-policy');
+                          },
                         ),
                         const Divider(height: 1, color: Color(0xFFF2F4F7)),
                         _buildSettingsRow(
                           icon: Icons.description_outlined,
                           title: 'Terms & Conditions',
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/terms');
+                          },
                         ),
                       ],
                     ),

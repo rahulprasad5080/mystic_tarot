@@ -13,6 +13,8 @@ import 'presentation/screens/reading_detail_screen.dart';
 import 'presentation/screens/card_select_screen.dart';
 import 'presentation/screens/compatibility_input_screen.dart';
 import 'presentation/screens/login_screen.dart';
+import 'presentation/screens/privacy_policy_screen.dart';
+import 'presentation/screens/terms_conditions_screen.dart';
 import 'state/providers/connectivity_provider.dart';
 import 'presentation/widgets/no_internet_widget.dart';
 import 'presentation/widgets/divine_loading_widget.dart';
@@ -112,6 +114,14 @@ class MysticTarotApp extends ConsumerWidget {
             final readingType = settings.arguments as ReadingType;
             return MaterialPageRoute(
               builder: (_) => CompatibilityInputScreen(readingType: readingType),
+            );
+          case '/privacy-policy':
+            return MaterialPageRoute(
+              builder: (_) => const PrivacyPolicyScreen(),
+            );
+          case '/terms':
+            return MaterialPageRoute(
+              builder: (_) => const TermsConditionsScreen(),
             );
           default:
             return MaterialPageRoute(builder: (_) => const MainScreen());
