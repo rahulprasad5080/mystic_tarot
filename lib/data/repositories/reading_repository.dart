@@ -69,9 +69,16 @@ class ReadingRepository {
     required String cardImage,
     required String language,
   }) async {
+    // DivineAPI limits heartbreak and divine_magic endpoints to card_image values 1..3
+    int cardVal = int.tryParse(cardImage) ?? 1;
+    if (cardVal > 3 || cardVal < 1) {
+      cardVal = ((cardVal - 1) % 3) + 1;
+    }
+    final safeCardImage = cardVal.toString();
+
     final response = await _apiService.getDualCardReading(
       endpoint: endpoint,
-      cardImage: cardImage,
+      cardImage: safeCardImage,
       language: ApiConstants.enableTranslator ? language : 'en',
     );
 
@@ -114,8 +121,15 @@ class ReadingRepository {
     required String cardImage,
     required String language,
   }) async {
+    // DivineAPI limits love_triangle_reading endpoint to card_image values 1..3
+    int cardVal = int.tryParse(cardImage) ?? 1;
+    if (cardVal > 3 || cardVal < 1) {
+      cardVal = ((cardVal - 1) % 3) + 1;
+    }
+    final safeCardImage = cardVal.toString();
+
     final response = await _apiService.getLoveTriangleReading(
-      cardImage: cardImage,
+      cardImage: safeCardImage,
       language: ApiConstants.enableTranslator ? language : 'en',
     );
 
