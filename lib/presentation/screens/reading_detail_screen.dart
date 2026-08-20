@@ -239,6 +239,10 @@ class ReadingDetailScreen extends ConsumerWidget {
             const SizedBox(height: 28),
           ],
 
+          // Native Ad Widget (Placed between Card preview and Article content)
+          const NativeAdWidget(),
+          const SizedBox(height: 20),
+
           // 3. Divine Insight Box
           if (data.displayText.isNotEmpty)
             _buildDivineInsightCard(
@@ -598,6 +602,10 @@ class ReadingDetailScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
 
+          // Native Ad Widget (Placed between Cards and Article content)
+          const NativeAdWidget(),
+          const SizedBox(height: 20),
+
           if (data.displayText.isNotEmpty)
             _buildDivineInsightCard(
               title: 'Divine Insight',
@@ -680,6 +688,10 @@ class ReadingDetailScreen extends ConsumerWidget {
                 ],
               ),
             ),
+          const SizedBox(height: 16),
+
+          // Native Ad Widget (Placed between Score card and Article content)
+          const NativeAdWidget(),
           const SizedBox(height: 16),
 
           if (data.overallCompatibility != null)
@@ -854,6 +866,10 @@ class ReadingDetailScreen extends ConsumerWidget {
                 ),
             ],
           ),
+          const SizedBox(height: 20),
+
+          // Native Ad Widget (Placed between Cards and Article content)
+          const NativeAdWidget(),
           const SizedBox(height: 20),
 
           if (data.your != null)
