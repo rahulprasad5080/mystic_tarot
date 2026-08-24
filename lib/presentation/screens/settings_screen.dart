@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../state/providers/auth_provider.dart';
 
 /// Premium, sleek Settings screen matching modern design guidelines.
@@ -74,7 +75,28 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   ),
 
-                  const SizedBox(width: 38),
+                  // Share Button (Top Right)
+                  InkWell(
+                    onTap: () => _shareApp(),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFFEBF5FF),
+                        border: Border.all(
+                          color: const Color(0xFFD6E9FA),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.share_rounded,
+                        color: Color(0xFF006884),
+                        size: 20,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -223,6 +245,12 @@ class SettingsScreen extends ConsumerWidget {
                           icon: Icons.star_outline_rounded,
                           title: 'Rate App',
                           onTap: () => _openPlayStore(),
+                        ),
+                        const Divider(height: 1, color: Color(0xFFF2F4F7)),
+                        _buildSettingsRow(
+                          icon: Icons.share_outlined,
+                          title: 'Share App',
+                          onTap: () => _shareApp(),
                         ),
                         const Divider(height: 1, color: Color(0xFFF2F4F7)),
                         _buildSettingsRow(
@@ -452,5 +480,14 @@ class SettingsScreen extends ConsumerWidget {
     } catch (e) {
       debugPrint('url_launcher error: $e');
     }
+  }
+
+  /// Triggers native share sheet to share the app with friends.
+  void _shareApp() {
+    SharePlus.instance.share(
+      ShareParams(
+        text: 'Discover your destiny with Mystic Tarot! Download now: https://play.google.com/store/apps/details?id=com.ably.tarot_card_reading',
+      ),
+    );
   }
 }
