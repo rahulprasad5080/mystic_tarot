@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/constants/reading_types.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/text_styles.dart';
+import '../../state/providers/ai_provider.dart';
 import '../../core/l10n/generated/app_localizations.dart';
 import '../../data/models/reading_result.dart';
 import '../../data/models/dual_card_result.dart';
@@ -287,15 +288,15 @@ class ReadingDetailScreen extends ConsumerWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF261D42), Color(0xFF4A00E0)],
+                  gradient: LinearGradient(
+                    colors: AppColors.blueGradient,
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF4A00E0).withValues(alpha: 0.3),
+                      color: AppColors.primaryBlue.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -331,8 +332,8 @@ class ReadingDetailScreen extends ConsumerWidget {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amberAccent,
-                          foregroundColor: const Color(0xFF17122B),
+                          backgroundColor: AppColors.accentBlue,
+                          foregroundColor: AppColors.onAccent,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -825,15 +826,15 @@ class ReadingDetailScreen extends ConsumerWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF261D42), Color(0xFF4A00E0)],
+                  gradient: LinearGradient(
+                    colors: AppColors.blueGradient,
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF4A00E0).withValues(alpha: 0.3),
+                      color: AppColors.primaryBlue.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -869,8 +870,8 @@ class ReadingDetailScreen extends ConsumerWidget {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amberAccent,
-                          foregroundColor: const Color(0xFF17122B),
+                          backgroundColor: AppColors.accentBlue,
+                          foregroundColor: AppColors.onAccent,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),

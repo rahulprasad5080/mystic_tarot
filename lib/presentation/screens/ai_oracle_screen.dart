@@ -8,6 +8,7 @@ import '../../state/providers/subscription_provider.dart';
 import '../../data/services/ai_service.dart';
 import '../../data/services/user_profile_service.dart';
 import '../../data/models/user_profile.dart';
+import '../../core/theme/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/subscription_sheet.dart';
 
@@ -62,7 +63,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Free prompt limit is 500 characters. Subscribe for unlimited length! ✨'),
-          backgroundColor: const Color(0xFF006D85),
+          backgroundColor: AppColors.accentBlue,
           action: SnackBarAction(
             label: 'SUBSCRIBE',
             textColor: Colors.amberAccent,
@@ -137,15 +138,15 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8FC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF6F8FC),
+        backgroundColor: AppColors.surface,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: Color(0xFF0F5B7A),
+            color: AppColors.primaryBlue,
             size: 22,
           ),
           onPressed: () {
@@ -154,20 +155,20 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
             }
           },
         ),
-        title: const Text(
+        title: Text(
           'Divine Readings',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF0F5B7A),
+            color: AppColors.textPrimary,
           ),
         ),
         actions: [
           IconButton(
             tooltip: 'Subscription Plans',
-            icon: const Icon(
+            icon: Icon(
               Icons.workspace_premium_rounded,
-              color: Color(0xFF006D85),
+              color: AppColors.accentBlue,
               size: 24,
             ),
             onPressed: () {
@@ -187,10 +188,10 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFFBBE3F1),
+                    color: AppColors.primaryBlueLight,
                     width: 1.5,
                   ),
-                  color: Colors.white,
+                  color: AppColors.surface,
                 ),
                 child: ClipOval(
                   child: user?.photoURL != null && user!.photoURL!.isNotEmpty
@@ -202,7 +203,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                           errorWidget: (context, url, error) => const Icon(
                             Icons.person,
                             size: 22,
-                            color: Color(0xFF0F5B7A),
+                            color: AppColors.primaryBlue,
                           ),
                         )
                       : (user?.displayName != null &&
@@ -213,14 +214,14 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: Color(0xFF0F5B7A),
+                                    color: AppColors.primaryBlue,
                                   ),
                                 ),
                               )
                             : const Icon(
                                 Icons.person,
                                 size: 22,
-                                color: Color(0xFF0F5B7A),
+                                color: AppColors.primaryBlue,
                               )),
                 ),
               ),
@@ -249,7 +250,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF5A6E85),
+                          color: AppColors.textSecondary,
                         ),
                       ),
                       Expanded(
@@ -271,13 +272,13 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                      color: isSelected ? Colors.white : const Color(0xFF0F5B7A),
+                                      color: isSelected ? Colors.white : const AppColors.primaryBlue,
                                     ),
                                   ),
                                   backgroundColor: Colors.white,
-                                  selectedColor: const Color(0xFF006D85),
+                                  selectedColor: AppColors.accentBlue,
                                   side: BorderSide(
-                                    color: isSelected ? const Color(0xFF006D85) : const Color(0xFFD4E3ED),
+                                    color: isSelected ? AppColors.accentBlue : AppColors.backgroundCardLight,
                                   ),
                                   onSelected: (_) {
                                     ref.read(aiChatProvider.notifier).setFamilyMemberContext(
@@ -306,13 +307,13 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF006D85).withValues(alpha: 0.1),
-                      const Color(0xFF0F5B7A).withValues(alpha: 0.08),
+                      AppColors.accentBlue.withValues(alpha: 0.1),
+                      const AppColors.primaryBlue.withValues(alpha: 0.08),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: const Color(0xFF006D85).withValues(alpha: 0.3),
+                    color: AppColors.accentBlue.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -343,7 +344,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF0F5B7A),
+                        color: AppColors.primaryBlue,
                       ),
                     ),
                     if (chatState.currentCardName != null) ...[
@@ -352,7 +353,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                         '🃏 Card: ${chatState.currentCardName}',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF5A6E85),
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -363,7 +364,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
             // Quick Prompt Chips Carousel
             Container(
               height: 50,
-              color: const Color(0xFFF6F8FC),
+              color: AppColors.background,
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -391,7 +392,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                       label: Text(
                         prompt,
                         style: const TextStyle(
-                          color: Color(0xFF0F5B7A),
+                          color: AppColors.primaryBlue,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -434,14 +435,14 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF5A6E85),
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                               SizedBox(width: 4),
                               Icon(
                                 Icons.perm_identity_rounded,
                                 size: 14,
-                                color: Color(0xFF5A6E85),
+                                color: AppColors.textSecondary,
                               ),
                             ],
                           ),
@@ -451,7 +452,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                               maxWidth: MediaQuery.of(context).size.width * 0.78,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF006D85),
+                              color: AppColors.accentBlue,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(16),
                                 topRight: Radius.circular(16),
@@ -460,7 +461,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF006D85).withValues(alpha: 0.2),
+                                  color: AppColors.accentBlue.withValues(alpha: 0.2),
                                   blurRadius: 6,
                                   offset: const Offset(0, 3),
                                 ),
@@ -581,7 +582,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                               Icon(
                                 Icons.auto_awesome,
                                 size: 16,
-                                color: Color(0xFF0F5B7A),
+                                color: AppColors.primaryBlue,
                               ),
                               SizedBox(width: 6),
                               Text(
@@ -589,7 +590,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF0F5B7A),
+                                  color: AppColors.primaryBlue,
                                 ),
                               ),
                             ],
@@ -678,7 +679,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFF006D85).withValues(alpha: 0.3),
+                          color: AppColors.accentBlue.withValues(alpha: 0.3),
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -703,7 +704,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                           Text(
                             'Consulting the stars...',
                             style: TextStyle(
-                              color: Color(0xFF0F5B7A),
+                              color: AppColors.primaryBlue,
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
                             ),
@@ -741,7 +742,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF006D85),
+                            backgroundColor: AppColors.accentBlue,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -784,7 +785,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                           decoration: InputDecoration(
                             hintText: 'Ask Mystic Oracle...',
                             hintStyle: const TextStyle(
-                              color: Color(0xFF94A3B8),
+                              color: AppColors.textMuted,
                               fontSize: 14,
                             ),
                             filled: true,
@@ -796,7 +797,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30),
                               borderSide: const BorderSide(
-                                color: Color(0xFFCBD5E1),
+                                color: AppColors.backgroundCardLight,
                                 width: 1,
                               ),
                             ),
