@@ -272,7 +272,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                      color: isSelected ? Colors.white : const AppColors.primaryBlue,
+                                      color: isSelected ? Colors.white : AppColors.primaryBlue,
                                     ),
                                   ),
                                   backgroundColor: Colors.white,
@@ -308,7 +308,7 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                   gradient: LinearGradient(
                     colors: [
                       AppColors.accentBlue.withValues(alpha: 0.1),
-                      const AppColors.primaryBlue.withValues(alpha: 0.08),
+                      AppColors.primaryBlue.withValues(alpha: 0.08),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(12),
