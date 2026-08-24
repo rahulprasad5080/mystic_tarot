@@ -22,22 +22,46 @@ class AIChatState {
   final List<ChatMessage> messages;
   final bool isLoading;
   final String? errorMessage;
+  final String? currentReadingTitle;
+  final String? currentReadingPrediction;
+  final String? currentCardName;
+  final String? selectedFamilyMemberId;
+  final String? selectedFamilyMemberName;
+  final String? selectedFamilyMemberZodiac;
 
   AIChatState({
     required this.messages,
     this.isLoading = false,
     this.errorMessage,
+    this.currentReadingTitle,
+    this.currentReadingPrediction,
+    this.currentCardName,
+    this.selectedFamilyMemberId,
+    this.selectedFamilyMemberName,
+    this.selectedFamilyMemberZodiac,
   });
 
   AIChatState copyWith({
     List<ChatMessage>? messages,
     bool? isLoading,
     String? errorMessage,
+    String? currentReadingTitle,
+    String? currentReadingPrediction,
+    String? currentCardName,
+    String? selectedFamilyMemberId,
+    String? selectedFamilyMemberName,
+    String? selectedFamilyMemberZodiac,
   }) {
     return AIChatState(
       messages: messages ?? this.messages,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage,
+      currentReadingTitle: currentReadingTitle ?? this.currentReadingTitle,
+      currentReadingPrediction: currentReadingPrediction ?? this.currentReadingPrediction,
+      currentCardName: currentCardName ?? this.currentCardName,
+      selectedFamilyMemberId: selectedFamilyMemberId ?? this.selectedFamilyMemberId,
+      selectedFamilyMemberName: selectedFamilyMemberName ?? this.selectedFamilyMemberName,
+      selectedFamilyMemberZodiac: selectedFamilyMemberZodiac ?? this.selectedFamilyMemberZodiac,
     );
   }
 }
@@ -109,8 +133,17 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
         .map((m) => {'sender': m.sender, 'text': m.text})
         .toList();
 
+    // Build prompt with family member context if available
+    var finalPrompt = trimmed;
+    if (state.selectedFamilyMemberName != null && state.selectedFamilyMemberName!.isNotEmpty) {
+      final memberContext = '''
+[Discussing about: ${state.selectedFamilyMemberName}${state.selectedFamilyMemberZodiac != null ? ' (${state.selectedFamilyMemberZodiac})' : ''}]
+''';
+      finalPrompt = memberContext + trimmed;
+    }
+
     final response = await _aiService.sendMessage(
-      prompt: trimmed,
+      prompt: finalPrompt,
       chatHistory: recentHistory,
     );
 
@@ -159,6 +192,75 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
           timestamp: DateTime.now(),
         ),
       ],
+    );
+  }
+
+  void setReadingContext({
+    required String readingTitle,
+    required String readingPrediction,
+    String? cardName,
+  }) {
+    state = state.copyWith(
+      currentReadingTitle: readingTitle,
+      currentReadingPrediction: readingPrediction,
+      currentCardName: cardName,
+    );
+  }
+
+  void setFamilyMemberContext({
+    required String memberId,
+    required String memberName,
+    String? memberZodiac,
+  }) {
+    state = state.copyWith(
+      selectedFamilyMemberId: memberId,
+      selectedFamilyMemberName: memberName,
+      selectedFamilyMemberZodiac: memberZodiac,
+    );
+  }
+
+  void clearFamilyMemberContext() {
+    state = state.copyWith(
+      selectedFamilyMemberId: null,
+      selectedFamilyMemberName: null,
+      selectedFamilyMemberZodiac: null,
+    );
+  }
+
+  Future<void> analyzeCurrentReading() async {
+    if (state.currentReadingTitle == null || state.currentReadingPrediction == null) {
+      return;
+    }
+
+    final aiMsg = ChatMessage(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      text: '🔮 *Analyzing your ${state.currentReadingTitle} reading...*',
+      sender: 'ai',
+      timestamp: DateTime.now(),
+    );
+
+    state = state.copyWith(
+      messages: [...state.messages, aiMsg],
+      isLoading: true,
+    );
+
+    final response = await _aiService.analyzeReading(
+      readingTitle: state.currentReadingTitle!,
+      predictionText: state.currentReadingPrediction!,
+      cardName: state.currentCardName,
+    );
+
+    final resultMsg = ChatMessage(
+      id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
+      text: response,
+      sender: 'ai',
+      timestamp: DateTime.now(),
+      isError: response.contains('interrupted') || response.contains('Error'),
+    );
+
+    state = state.copyWith(
+      messages: [...state.messages, resultMsg],
+      isLoading: false,
     );
   }
 }

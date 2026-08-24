@@ -347,11 +347,15 @@ class ReadingDetailScreen extends ConsumerWidget {
                           final cardName = data.card ?? '';
                           final text = data.displayText;
                           final title = _getReadingTitle(l10n);
-                          final prompt = 'Please provide a deep AI analysis for my "$title" reading.'
-                              '${cardName.isNotEmpty ? " Card drawn: $cardName." : ""}'
-                              ' Prediction snippet: "${text.length > 200 ? text.substring(0, 200) : text}..."';
 
-                          ref.read(aiChatProvider.notifier).sendMessage(prompt);
+                          // Set reading context in AI provider
+                          ref.read(aiChatProvider.notifier).setReadingContext(
+                                readingTitle: title,
+                                readingPrediction: text,
+                                cardName: cardName.isNotEmpty ? cardName : null,
+                              );
+
+                          // Navigate to AI Oracle with reading context
                           Navigator.of(context).pushNamed('/ai-oracle');
                         },
                       ),
@@ -810,6 +814,88 @@ class ReadingDetailScreen extends ConsumerWidget {
               icon: Icons.event_rounded,
             ),
           ],
+          const SizedBox(height: 24),
+
+          // AI Insight Button for Compatibility
+          Consumer(
+            builder: (context, ref, child) {
+              final title = '${data.sign1 ?? 'Sign1'} & ${data.sign2 ?? 'Sign2'} Compatibility';
+              final prediction = data.overallCompatibility ?? 'Love compatibility reading';
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF261D42), Color(0xFF4A00E0)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF4A00E0).withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.auto_awesome, color: Colors.amberAccent, size: 22),
+                        SizedBox(width: 8),
+                        Text(
+                          'Ask AI Oracle for Deeper Insight ✨',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Get personalized AI interpretation tailored to your situation.',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.amberAccent,
+                          foregroundColor: const Color(0xFF17122B),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.psychology_rounded, size: 18),
+                        label: const Text(
+                          'Analyze with Mystic AI 🔮',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () {
+                          ref.read(aiChatProvider.notifier).setReadingContext(
+                                readingTitle: title,
+                                readingPrediction: prediction,
+                              );
+                          Navigator.of(context).pushNamed('/ai-oracle');
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+
           const SizedBox(height: 24),
           const NativeAdWidget(),
         ],

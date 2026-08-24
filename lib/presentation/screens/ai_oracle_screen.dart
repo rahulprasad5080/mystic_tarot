@@ -6,6 +6,9 @@ import '../../state/providers/ai_provider.dart';
 import '../../state/providers/auth_provider.dart';
 import '../../state/providers/subscription_provider.dart';
 import '../../data/services/ai_service.dart';
+import '../../data/services/user_profile_service.dart';
+import '../../data/models/user_profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/subscription_sheet.dart';
 
 class AIOracleScreen extends ConsumerStatefulWidget {
@@ -35,12 +38,16 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+      if (mounted && _scrollController.hasClients) {
+        try {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        } catch (e) {
+          debugPrint('Scroll error: $e');
+        }
       }
     });
   }
@@ -224,6 +231,135 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // Family Member Selector
+            FutureBuilder<SharedPreferences>(
+              future: SharedPreferences.getInstance(),
+              builder: (context, prefs) {
+                if (!prefs.hasData) return const SizedBox.shrink();
+                final profileService = UserProfileService(prefs.data!);
+                final profiles = profileService.loadProfiles();
+
+                return Container(
+                  padding: const EdgeInsets.all(12),
+                  color: const Color(0xFFFAFBFC),
+                  child: Row(
+                    children: [
+                      const Text(
+                        '👤 About: ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF5A6E85),
+                        ),
+                      ),
+                      Expanded(
+                        child: SizedBox(
+                          height: 36,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: profiles.length,
+                            itemBuilder: (context, index) {
+                              final profile = profiles[index];
+                              final isSelected = chatState.selectedFamilyMemberId == profile.id;
+
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: FilterChip(
+                                  selected: isSelected,
+                                  label: Text(
+                                    profile.name,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                      color: isSelected ? Colors.white : const Color(0xFF0F5B7A),
+                                    ),
+                                  ),
+                                  backgroundColor: Colors.white,
+                                  selectedColor: const Color(0xFF006D85),
+                                  side: BorderSide(
+                                    color: isSelected ? const Color(0xFF006D85) : const Color(0xFFD4E3ED),
+                                  ),
+                                  onSelected: (_) {
+                                    ref.read(aiChatProvider.notifier).setFamilyMemberContext(
+                                      memberId: profile.id,
+                                      memberName: profile.name,
+                                      memberZodiac: profile.zodiacSign,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            // Reading Context Card (if analyzing a specific reading)
+            if (chatState.currentReadingTitle != null)
+              Container(
+                margin: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFF006D85).withValues(alpha: 0.1),
+                      const Color(0xFF0F5B7A).withValues(alpha: 0.08),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFF006D85).withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.info_rounded,
+                          size: 16,
+                          color: Color(0xFF006D85),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Analyzing Your Reading',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF006D85),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '📖 ${chatState.currentReadingTitle}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF0F5B7A),
+                      ),
+                    ),
+                    if (chatState.currentCardName != null) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        '🃏 Card: ${chatState.currentCardName}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF5A6E85),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
             // Quick Prompt Chips Carousel
             Container(
               height: 50,
@@ -594,62 +730,104 @@ class _AIOracleScreenState extends ConsumerState<AIOracleScreen> {
                   ),
                 ),
               ),
-              child: Row(
+              child: Column(
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      style: const TextStyle(
-                        color: Color(0xFF2D3748),
-                        fontSize: 14.5,
-                      ),
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _handleSend(),
-                      decoration: InputDecoration(
-                        hintText: 'Ask Mystic Oracle...',
-                        hintStyle: const TextStyle(
-                          color: Color(0xFF94A3B8),
-                          fontSize: 14,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFCBD5E1),
-                            width: 1,
+                  // Analyze Reading Button (if reading context exists)
+                  if (chatState.currentReadingTitle != null &&
+                      chatState.messages.length <= 1) // Only show if chat is fresh
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF006D85),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: chatState.isLoading
+                              ? null
+                              : () {
+                                  ref.read(aiChatProvider.notifier).analyzeCurrentReading();
+                                  _scrollToBottom();
+                                },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.auto_awesome, size: 18, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text(
+                                'Get AI Insight on This Reading',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF006D85),
-                            width: 1.5,
+                      ),
+                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _controller,
+                          style: const TextStyle(
+                            color: Color(0xFF2D3748),
+                            fontSize: 14.5,
+                          ),
+                          textInputAction: TextInputAction.send,
+                          onSubmitted: (_) => _handleSend(),
+                          decoration: InputDecoration(
+                            hintText: 'Ask Mystic Oracle...',
+                            hintStyle: const TextStyle(
+                              color: Color(0xFF94A3B8),
+                              fontSize: 14,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFCBD5E1),
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF006D85),
+                                width: 1.5,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFF006D85),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.send_rounded,
-                        color: Colors.white,
-                        size: 20,
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFF006D85),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.send_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          onPressed: () => _handleSend(),
+                        ),
                       ),
-                      onPressed: () => _handleSend(),
-                    ),
+                    ],
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,6 +13,9 @@ class AIService {
   static const String _systemInstruction = '''
 You are "Mystic Oracle", a wise, intuitive, compassionate, and mystical AI Tarot & Astrological Guide.
 Your purpose is to provide spiritual insights, Tarot card interpretations, zodiac compatibility advice, and guidance for life, love, and career questions.
+
+IMPORTANT: If the user mentions a family member's name in brackets [like this], personalize your responses to that specific person. Reference their name and consider their zodiac sign when giving advice. Be warm and specific about them.
+
 Tone: Warm, mystical, empathetic, insightful, and encouraging.
 Formatting: Use clear headings, bullet points, and cosmic emojis (✨, 🃏, 🌙, 🔮, 💫) when appropriate. Keep responses concise, engaging, and easy to read.
 If the user asks non-spiritual or unrelated technical questions, gently guide them back with mystical wisdom.
@@ -20,7 +24,15 @@ If the user asks non-spiritual or unrelated technical questions, gently guide th
   /// Check if Gemini API Key is configured
   bool get isKeyConfigured => _apiKey.trim().isNotEmpty && _apiKey != 'your_gemini_api_key_here';
 
-  String get _modelName => dotenv.env['GEMINI_MODEL'] ?? 'gemini-2.5-flash-lite';
+  String get _modelName => dotenv.env['GEMINI_MODEL'] ?? 'gemini-2.0-flash';
+
+  /// Fallback models to try if primary model fails
+  static const List<String> fallbackModels = [
+    'gemini-2.0-flash',
+    'gemini-1.5-pro',
+    'gemini-1.5-flash',
+    'gemini-pro-vision',
+  ];
 
   /// Send chat prompt to Gemini API
   Future<String> sendMessage({
@@ -74,8 +86,9 @@ To unlock personalized AI Tarot readings and cosmic guidance, please add your **
         ]
       });
 
+      final modelPath = _modelName.startsWith('models/') ? _modelName : 'models/$_modelName';
       final url = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/$_modelName:generateContent?key=$_apiKey',
+        'https://generativelanguage.googleapis.com/v1beta/$modelPath:generateContent?key=$_apiKey',
       );
 
       final response = await http.post(
@@ -103,8 +116,29 @@ To unlock personalized AI Tarot readings and cosmic guidance, please add your **
         return 'The celestial alignment is shifting. Please ask again.';
       }
 
-      return '🔮 *The cosmic connection was interrupted (Error ${response.statusCode}). Please check your API key or network.*';
+      // Enhanced error logging for debugging
+      debugPrint('❌ Gemini API Error');
+      debugPrint('Status Code: ${response.statusCode}');
+      debugPrint('Request URL: ${url.toString()}');
+      debugPrint('Model: $_modelName');
+      debugPrint('Model Path: $modelPath');
+      debugPrint('API Key Present: ${_apiKey.isNotEmpty}');
+      debugPrint('Response Body: ${response.body}');
+
+      // User-friendly error messages based on status code
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        return '🔮 *Authentication failed. Please verify your **GEMINI_API_KEY** in the .env file.*';
+      } else if (response.statusCode == 404) {
+        return '🔮 *Invalid model name: $_modelName. Try: **gemini-1.5-flash**, **gemini-1.5-pro**, or **gemini-2.0-flash***';
+      } else if (response.statusCode == 400) {
+        return '🔮 *Bad request. Model: $_modelName may not be available. Try **gemini-1.5-flash** instead.*';
+      } else if (response.statusCode == 429) {
+        return '⏳ *API rate limit exceeded. Please try again in a moment.* ✨';
+      }
+
+      return '🔮 *The cosmic connection was interrupted (Error ${response.statusCode}). Try updating GEMINI_MODEL in .env.*';
     } catch (e) {
+      debugPrint('❌ Gemini API Exception: $e');
       return '✨ *The cosmic energy fluctuated: ${e.toString()}*';
     }
   }
@@ -153,6 +187,35 @@ Provide a deeper, personalized AI Tarot interpretation for this reading:
   /// Get allowed daily question count for user
   static int getDailyLimit({bool isSubscribed = false}) {
     return isSubscribed ? subscriberDailyQuestionLimit : freeDailyQuestionLimit;
+  }
+
+  /// List available models (for debugging)
+  Future<List<String>> listAvailableModels() async {
+    try {
+      final url = Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models?key=$_apiKey',
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final models = data['models'] as List?;
+        if (models != null) {
+          final modelNames = models
+              .map((m) => (m['name'] as String?)?.replaceFirst('models/', '') ?? '')
+              .where((name) => name.isNotEmpty && name.contains('gemini'))
+              .toList();
+          debugPrint('✅ Available Gemini models: $modelNames');
+          return modelNames;
+        }
+      }
+      debugPrint('❌ Could not list models. Status: ${response.statusCode}');
+      return [];
+    } catch (e) {
+      debugPrint('❌ Error listing models: $e');
+      return [];
+    }
   }
 }
 
