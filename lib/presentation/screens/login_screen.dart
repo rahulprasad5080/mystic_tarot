@@ -72,30 +72,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     }
   }
 
-  Future<void> _continueAsGuest() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    final authService = ref.read(authServiceProvider);
-
-    try {
-      await authService.signInAnonymously();
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
-    } catch (_) {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -339,21 +315,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           ),
                         ),
                       ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Guest Mode Option (subtle)
-                  TextButton(
-                    onPressed: _isLoading ? null : _continueAsGuest,
-                    child: Text(
-                      'Skip for now (Guest)',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF64748B),
-                      ),
                     ),
                   ),
 

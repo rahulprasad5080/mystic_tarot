@@ -257,55 +257,85 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                     const SizedBox(height: 16),
 
-                    // Featured Blue Banner Card
+                    // Mystic AI Oracle Featured Banner
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                          vertical: 18.0,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFE3F2FF),
-                              Color(0xFFD6EBFF),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/ai-oracle');
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(18.0),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFF38BDF8), Color(0xFF0284C7),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFF38BDF8,
+                                ).withValues(alpha: 0.4),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
                             ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: const Color(0xFFC2E0FF),
-                            width: 1.0,
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                ),
+                                child: const Icon(
+                                  Icons.auto_awesome,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      'Ask Mystic AI Oracle ✨',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Get personalized AI Tarot readings & cosmic answers',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ],
                           ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              'Your answers are closer than you\nthink.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF0F172A),
-                                height: 1.3,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Choose a reading to begin your journey.',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xFF475569),
-                              ),
-                            ),
-                          ],
                         ),
                       ),
                     ),
+
+
 
                     const SizedBox(height: 16),
 

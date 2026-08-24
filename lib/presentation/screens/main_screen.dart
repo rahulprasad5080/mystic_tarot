@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'home_screen.dart';
+import 'ai_oracle_screen.dart';
 import 'settings_screen.dart';
 
-/// Main Shell Screen managing tab switching (Home, Settings)
+/// Main Shell Screen managing tab switching (Home, AI Oracle, Settings)
 /// using a unified persistent BottomNavigationBar and IndexedStack.
 class MainScreen extends StatefulWidget {
   final int initialIndex;
@@ -23,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _currentIndex = widget.initialIndex.clamp(0, 1);
+    _currentIndex = widget.initialIndex.clamp(0, 2);
   }
 
   @override
@@ -31,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialIndex != widget.initialIndex) {
       setState(() {
-        _currentIndex = widget.initialIndex.clamp(0, 1);
+        _currentIndex = widget.initialIndex.clamp(0, 2);
       });
     }
   }
@@ -43,6 +44,7 @@ class _MainScreenState extends State<MainScreen> {
         index: _currentIndex,
         children: const [
           HomeScreen(),
+          AIOracleScreen(),
           SettingsScreen(),
         ],
       ),
@@ -65,8 +67,8 @@ class _MainScreenState extends State<MainScreen> {
             });
           },
           backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF006884),
-          unselectedItemColor: const Color(0xFF667085),
+          selectedItemColor: const Color(0xFF006D85),
+          unselectedItemColor: const Color(0xFF64748B),
           selectedFontSize: 12,
           unselectedFontSize: 12,
           type: BottomNavigationBarType.fixed,
@@ -76,6 +78,11 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home_rounded),
               label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.auto_awesome_outlined),
+              activeIcon: Icon(Icons.auto_awesome),
+              label: 'AI Oracle',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings_outlined),
@@ -88,3 +95,4 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+

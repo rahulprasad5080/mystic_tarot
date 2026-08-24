@@ -5,6 +5,8 @@ import 'package:in_app_review/in_app_review.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../state/providers/auth_provider.dart';
+import '../../state/providers/subscription_provider.dart';
+import '../widgets/subscription_sheet.dart';
 
 /// Premium, sleek Settings screen matching modern design guidelines.
 class SettingsScreen extends ConsumerWidget {
@@ -15,16 +17,17 @@ class SettingsScreen extends ConsumerWidget {
     const backgroundColor = Color(0xFFF8FAFC);
     final user = ref.watch(currentUserProvider);
     final authService = ref.watch(authServiceProvider);
+    final subState = ref.watch(subscriptionProvider);
+    final isSubscribed = subState.isSubscribed;
+    final activePlanName = subState.activePlan?.title;
 
     final displayName = user?.displayName != null && user!.displayName!.isNotEmpty
         ? user.displayName!
-        : (user?.isAnonymous == true ? 'Guest Seeker' : 'Mystic Traveler');
+        : 'Mystic Traveler';
 
     final emailText = user?.email != null && user!.email!.isNotEmpty
         ? user.email!
-        : (user?.isAnonymous == true
-            ? 'Guest Account'
-            : (user != null ? 'Registered User' : 'Not Signed In'));
+        : (user != null ? 'Registered User' : 'Not Signed In');
 
     final initialLetter = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'M';
 
@@ -234,7 +237,120 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 24),
+
+                    // Section Header: MEMBERSHIP & SUBSCRIPTION
+                    _buildSectionHeader('MEMBERSHIP & SUBSCRIPTION'),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () => SubscriptionSheet.show(context),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 16.0,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: isSubscribed
+                              ? const LinearGradient(
+                                  colors: [
+                                    Color(0xFF006D85),
+                                    Color(0xFF004F62),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                              : const LinearGradient(
+                                  colors: [
+                                    Color(0xFF38BDF8),
+                                    Color(0xFF0284C7),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFF38BDF8,
+                              ).withValues(alpha: 0.35),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withValues(alpha: 0.22),
+                              ),
+                              child: Icon(
+                                Icons.workspace_premium_rounded,
+                                color: isSubscribed
+                                    ? Colors.amberAccent
+                                    : Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    isSubscribed && activePlanName != null
+                                        ? 'Active: $activePlanName'
+                                        : 'Subscription Plans',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    isSubscribed
+                                        ? '10 Daily AI Questions ✨'
+                                        : 'Unlock 10 Daily AI Questions',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                isSubscribed ? 'ACTIVE ✨' : 'PLANS ✨',
+                                style: TextStyle(
+                                  color: isSubscribed
+                                      ? const Color(0xFF006D85)
+                                      : const Color(0xFF0284C7),
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
 
                     // Section Header: ABOUT & SUPPORT
                     _buildSectionHeader('ABOUT & SUPPORT'),
@@ -409,6 +525,8 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildSettingsRow({
     required IconData icon,
     required String title,
+    String? subtitle,
+    Widget? trailing,
     VoidCallback? onTap,
   }) {
     return InkWell(
@@ -434,17 +552,37 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(width: 14),
 
-            // Title
+            // Title & Subtitle
             Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF101828),
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
+
+            if (trailing != null) ...[
+              trailing,
+              const SizedBox(width: 4),
+            ],
 
             const Icon(
               Icons.chevron_right_rounded,
