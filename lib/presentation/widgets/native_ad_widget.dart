@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../core/constants/ad_constants.dart';
 
 /// Styled Native / Medium Rectangle Ad Widget matching the app's template.
 class NativeAdWidget extends StatefulWidget {
@@ -22,7 +23,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   void _loadAd() {
     _ad = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111', // Standard Google Test Ad Unit ID
+      adUnitId: AdConstants.nativeAdUnitId,
       size: AdSize.mediumRectangle, // 300x250 card ad size
       request: const AdRequest(),
       listener: BannerAdListener(

@@ -262,7 +262,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pushNamed('/ai-oracle');
+                          AdService.instance.showInterstitialAd(
+                            onAdDismissed: () {
+                              if (!mounted) return;
+                              Navigator.of(context).pushNamed('/ai-oracle');
+                            },
+                          );
                         },
                         child: Container(
                           width: double.infinity,

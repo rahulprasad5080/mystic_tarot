@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/constants/reading_types.dart';
 import '../../core/l10n/generated/app_localizations.dart';
+import '../../data/services/ad_service.dart';
 
 /// Card selection screen matching the exact UI design mockup:
 /// - Light celestial background with soft light blue cards.
@@ -305,11 +306,16 @@ class _CardSelectScreenState extends State<CardSelectScreen>
                           onPressed: _selectedCard != null
                               ? () {
                                   HapticFeedback.mediumImpact();
-                                  Navigator.of(context).pushReplacementNamed(
-                                    '/reading-detail',
-                                    arguments: {
-                                      'readingType': widget.readingType,
-                                      'cardImage': _selectedCard.toString(),
+                                  AdService.instance.showInterstitialAd(
+                                    onAdDismissed: () {
+                                      if (!mounted) return;
+                                      Navigator.of(context).pushReplacementNamed(
+                                        '/reading-detail',
+                                        arguments: {
+                                          'readingType': widget.readingType,
+                                          'cardImage': _selectedCard.toString(),
+                                        },
+                                      );
                                     },
                                   );
                                 }
