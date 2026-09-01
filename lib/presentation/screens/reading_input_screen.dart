@@ -5,6 +5,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/reading_types.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/services/user_profile_service.dart';
+import '../../data/services/ad_service.dart';
 import '../../state/providers/locale_provider.dart';
 import '../widgets/native_ad_widget.dart';
 
@@ -489,17 +490,22 @@ class _ReadingInputScreenState extends ConsumerState<ReadingInputScreen> {
     // Save profile details for future readings
     _updateActiveProfileInMemory();
 
-    if (widget.readingType.inputType == ReadingInputType.cardSelect) {
-      Navigator.of(context).pushNamed(
-        '/card-select',
-        arguments: widget.readingType,
-      );
-    } else {
-      Navigator.of(context).pushNamed(
-        '/reading-detail',
-        arguments: widget.readingType,
-      );
-    }
+    AdService.instance.showInterstitialAd(
+      onAdDismissed: () {
+        if (!mounted) return;
+        if (widget.readingType.inputType == ReadingInputType.cardSelect) {
+          Navigator.of(context).pushNamed(
+            '/card-select',
+            arguments: widget.readingType,
+          );
+        } else {
+          Navigator.of(context).pushNamed(
+            '/reading-detail',
+            arguments: widget.readingType,
+          );
+        }
+      },
+    );
   }
 
   @override

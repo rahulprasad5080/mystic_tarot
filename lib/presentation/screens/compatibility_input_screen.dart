@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/reading_types.dart';
 import '../../core/l10n/generated/app_localizations.dart';
+import '../../data/services/ad_service.dart';
 
 /// Zodiac sign color model for soft pastel circles and symbol colors
 class ZodiacVisual {
@@ -231,12 +232,17 @@ class _CompatibilityInputScreenState extends State<CompatibilityInputScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pushReplacementNamed(
-                      '/reading-detail',
-                      arguments: {
-                        'readingType': widget.readingType,
-                        'sign1': _sign1,
-                        'sign2': _sign2,
+                    AdService.instance.showInterstitialAd(
+                      onAdDismissed: () {
+                        if (!mounted) return;
+                        Navigator.of(context).pushReplacementNamed(
+                          '/reading-detail',
+                          arguments: {
+                            'readingType': widget.readingType,
+                            'sign1': _sign1,
+                            'sign2': _sign2,
+                          },
+                        );
                       },
                     );
                   },

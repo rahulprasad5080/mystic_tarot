@@ -84,7 +84,7 @@ class AdService {
     }
   }
 
-  /// Create Native Video Ad instance with test Ad Unit ID.
+  /// Create Native Video Ad instance with production Ad Unit ID.
   NativeAd createNativeVideoAd({
     required String factoryId,
     required NativeAdListener listener,

@@ -5,11 +5,11 @@ class AdConstants {
   /// Google AdMob App ID
   static const String appId = 'ca-app-pub-9924987494596109~9371352855';
 
-  /// Native Video Ad Test Unit ID
+  /// Native Video Ad Unit ID
   static const String nativeAdUnitId =
-      'ca-app-pub-3940256099942544/1044960115';
+      'ca-app-pub-9924987494596109/4309085093';
 
-  /// Interstitial Ad Test Unit ID
+  /// Interstitial Ad Unit ID
   static const String interstitialAdUnitId =
-      'ca-app-pub-3940256099942544/1033173712';
+      'ca-app-pub-9924987494596109/6788355887';
 }
