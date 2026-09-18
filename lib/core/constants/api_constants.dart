@@ -1,4 +1,3 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../data/services/remote_config_service.dart';
 
 /// API constants sourced from environment and the DivineAPI OpenAPI spec.
@@ -78,17 +77,8 @@ class ApiConstants {
     return 'en';
   }
 
-  /// Enable/disable translator host (set DIVINE_API_ENABLE_TRANSLATOR=false in .env for Free Trial keys).
-  static bool get enableTranslator {
-    try {
-      if (!dotenv.isInitialized) return true;
-      return (dotenv.env['DIVINE_API_ENABLE_TRANSLATOR'] ?? 'true')
-              .toLowerCase() ==
-          'true';
-    } catch (_) {
-      return true;
-    }
-  }
+  /// Enable/disable translator host (set DIVINE_API_ENABLE_TRANSLATOR=false in Remote Config for Free Trial keys).
+  static bool get enableTranslator => RemoteConfigService.enableTranslator;
 
   /// Resolve host domain dynamically based on language code.
   /// English ('en') or Free Trial mode -> hostEnglish (https://astroapi-5.divineapi.com)

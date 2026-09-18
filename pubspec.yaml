@@ -14,7 +14,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^2.6.1
   http: ^1.4.0
-  flutter_dotenv: ^5.2.1
   shared_preferences: ^2.5.5
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
@@ -50,5 +49,4 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - .env
     - assets/images/logo.jpeg
