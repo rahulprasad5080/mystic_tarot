@@ -66,7 +66,7 @@ class FirestorePaymentService {
       debugPrint('Firestore Payment Transaction recorded successfully for user $userId');
     } catch (e) {
       debugPrint('Error recording payment transaction in Firestore: $e');
-      rethrow;
+      // Do not rethrow so app subscription isn't blocked if Firestore Security Rules are strict
     }
   }
 

@@ -155,11 +155,15 @@ class PaymentNotifier extends StateNotifier<PaymentState> {
           }
         },
         onError: (failure) {
+          final rawMsg = failure.message ?? '';
+          final errorMsg = rawMsg.isNotEmpty && !rawMsg.contains('null')
+              ? rawMsg
+              : 'Invalid Razorpay Key ID. Please add your valid Razorpay Test Key (rzp_test_...) in Firebase Remote Config.';
           state = state.copyWith(
             isProcessing: false,
-            errorMessage: failure.message,
+            errorMessage: errorMsg,
           );
-          onError(failure.message ?? 'Payment failed via Razorpay');
+          onError(errorMsg);
         },
         onExternalWallet: (walletResponse) {
           debugPrint('External wallet selected: ${walletResponse.walletName}');
