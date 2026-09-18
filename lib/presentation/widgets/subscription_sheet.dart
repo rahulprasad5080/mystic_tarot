@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/subscription_plan.dart';
+import '../../data/services/region_service.dart';
+import '../../state/providers/auth_provider.dart';
+import '../../state/providers/payment_provider.dart';
 import '../../state/providers/subscription_provider.dart';
 
 class SubscriptionSheet extends ConsumerStatefulWidget {
@@ -21,16 +24,22 @@ class SubscriptionSheet extends ConsumerStatefulWidget {
 
 class _SubscriptionSheetState extends ConsumerState<SubscriptionSheet> {
   String _selectedPlanId = 'plan_12_month';
-  bool _isProcessing = false;
 
   @override
   Widget build(BuildContext context) {
     final isSubscribed = ref.watch(subscriptionProvider).isSubscribed;
+    final paymentState = ref.watch(paymentProvider);
+    final paymentNotifier = ref.read(paymentProvider.notifier);
+    final currentUser = ref.watch(currentUserProvider);
+
     final plans = SubscriptionPlan.defaultPlans;
     final selectedPlan = plans.firstWhere(
       (p) => p.id == _selectedPlanId,
       orElse: () => plans.last,
     );
+
+    final isIndia = paymentState.isIndia;
+    final displayPrice = isIndia ? selectedPlan.formattedPriceINR : selectedPlan.formattedPriceUSD;
 
     return Container(
       decoration: const BoxDecoration(
@@ -105,7 +114,76 @@ class _SubscriptionSheetState extends ConsumerState<SubscriptionSheet> {
                   color: Color(0xFF64748B),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 14),
+
+              // Region & Gateway Indicator Badge Bar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFFBFDBFE),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      isIndia ? '🇮🇳 India Region' : '🌐 Global Region',
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1E40AF),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDBEAFE),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        isIndia ? 'Razorpay (UPI / Cards)' : 'Google Play Billing',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1D4ED8),
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    // Region toggle switch button
+                    InkWell(
+                      onTap: () {
+                        paymentNotifier.setRegion(
+                          isIndia ? RegionType.global : RegionType.india,
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.swap_horiz_rounded,
+                            size: 16,
+                            color: const Color(0xFF2563EB),
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            isIndia ? 'Switch to USD' : 'Switch to INR',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2563EB),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
 
               // Feature Highlights List
               Container(
@@ -149,6 +227,7 @@ class _SubscriptionSheetState extends ConsumerState<SubscriptionSheet> {
                 children: plans.map((plan) {
                   final isSelected = plan.id == _selectedPlanId;
                   final isBestValue = plan.id == 'plan_12_month';
+                  final planPriceText = isIndia ? plan.formattedPriceINR : plan.formattedPriceUSD;
 
                   return GestureDetector(
                     onTap: () {
@@ -249,16 +328,16 @@ class _SubscriptionSheetState extends ConsumerState<SubscriptionSheet> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                '${plan.formattedPriceINR} / ${plan.formattedPriceUSD}',
+                                planPriceText,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF006D85),
                                 ),
                               ),
-                              const Text(
-                                'One-time payment',
-                                style: TextStyle(
+                              Text(
+                                isIndia ? 'Razorpay Payment' : 'Google Play Billing',
+                                style: const TextStyle(
                                   fontSize: 10,
                                   color: Color(0xFF94A3B8),
                                 ),
@@ -278,41 +357,51 @@ class _SubscriptionSheetState extends ConsumerState<SubscriptionSheet> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: _isProcessing
+                  onPressed: paymentState.isProcessing
                       ? null
                       : () async {
                           final nav = Navigator.of(context);
                           final messenger = ScaffoldMessenger.of(context);
 
-                          setState(() {
-                            _isProcessing = true;
-                          });
+                          final userEmail = currentUser?.email ?? '';
+                          final userName = currentUser?.displayName ?? 'Seeker';
+                          final userPhone = '';
 
-                          await ref
-                              .read(subscriptionProvider.notifier)
-                              .activateSubscription(selectedPlan.id);
-
-                          if (!mounted) return;
-                          setState(() {
-                            _isProcessing = false;
-                          });
-                          nav.pop();
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: [
-                                  const Icon(Icons.stars_rounded, color: Colors.amberAccent),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      '✨ Subscription Activated (${selectedPlan.durationText})! Enjoy 10 daily AI questions!',
-                                    ),
+                          await paymentNotifier.processPayment(
+                            plan: selectedPlan,
+                            userEmail: userEmail,
+                            userName: userName,
+                            userPhone: userPhone,
+                            onSuccess: () {
+                              if (!mounted) return;
+                              nav.pop();
+                              messenger.showSnackBar(
+                                SnackBar(
+                                  content: Row(
+                                    children: [
+                                      const Icon(Icons.stars_rounded, color: Colors.amberAccent),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          '✨ Celestial Membership Activated (${selectedPlan.durationText})! Enjoy 10 daily AI questions!',
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              backgroundColor: const Color(0xFF006D85),
-                              duration: const Duration(seconds: 4),
-                            ),
+                                  backgroundColor: const Color(0xFF006D85),
+                                  duration: const Duration(seconds: 4),
+                                ),
+                              );
+                            },
+                            onError: (errMsg) {
+                              if (!mounted) return;
+                              messenger.showSnackBar(
+                                SnackBar(
+                                  content: Text('Payment Error: $errMsg'),
+                                  backgroundColor: Colors.redAccent,
+                                ),
+                              );
+                            },
                           );
                         },
                   style: ElevatedButton.styleFrom(
@@ -323,7 +412,7 @@ class _SubscriptionSheetState extends ConsumerState<SubscriptionSheet> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: _isProcessing
+                  child: paymentState.isProcessing
                       ? const SizedBox(
                           width: 22,
                           height: 22,
@@ -335,7 +424,9 @@ class _SubscriptionSheetState extends ConsumerState<SubscriptionSheet> {
                       : Text(
                           isSubscribed
                               ? 'Switch to ${selectedPlan.title}'
-                              : 'Subscribe Now — ${selectedPlan.formattedPriceINR}',
+                              : isIndia
+                                  ? 'Pay via Razorpay — $displayPrice'
+                                  : 'Pay via Google Play — $displayPrice',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -348,12 +439,14 @@ class _SubscriptionSheetState extends ConsumerState<SubscriptionSheet> {
               // Security & Payment Gateways Note
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.lock_outline_rounded, size: 13, color: Color(0xFF94A3B8)),
-                  SizedBox(width: 4),
+                children: [
+                  const Icon(Icons.lock_outline_rounded, size: 13, color: Color(0xFF94A3B8)),
+                  const SizedBox(width: 4),
                   Text(
-                    'Secured by Razorpay UPI & Google Play Payments',
-                    style: TextStyle(
+                    isIndia
+                        ? 'Secured by Razorpay UPI, NetBanking & Cards'
+                        : 'Secured by Google Play Store Payments',
+                    style: const TextStyle(
                       fontSize: 11,
                       color: Color(0xFF94A3B8),
                     ),
