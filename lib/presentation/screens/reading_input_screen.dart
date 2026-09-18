@@ -7,6 +7,7 @@ import '../../data/models/user_profile.dart';
 import '../../data/services/user_profile_service.dart';
 import '../../data/services/ad_service.dart';
 import '../../state/providers/locale_provider.dart';
+import '../../state/providers/subscription_provider.dart';
 import '../widgets/native_ad_widget.dart';
 
 /// Screen for entering user details (question, name, DOB, gender, sign)
@@ -487,10 +488,9 @@ class _ReadingInputScreenState extends ConsumerState<ReadingInputScreen> {
       return;
     }
 
-    // Save profile details for future readings
-    _updateActiveProfileInMemory();
-
+    final isSub = ref.read(subscriptionProvider).isSubscribed;
     AdService.instance.showInterstitialAd(
+      isSubscribed: isSub,
       onAdDismissed: () {
         if (!mounted) return;
         if (widget.readingType.inputType == ReadingInputType.cardSelect) {

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../core/constants/ad_constants.dart';
+import '../../state/providers/subscription_provider.dart';
 
 /// Styled Native / Medium Rectangle Ad Widget matching the app's template.
-class NativeAdWidget extends StatefulWidget {
+/// Automatically hides 100% of ads when user has an active Celestial Membership subscription.
+class NativeAdWidget extends ConsumerStatefulWidget {
   final double height;
   const NativeAdWidget({super.key, this.height = 280});
 
   @override
-  State<NativeAdWidget> createState() => _NativeAdWidgetState();
+  ConsumerState<NativeAdWidget> createState() => _NativeAdWidgetState();
 }
 
-class _NativeAdWidgetState extends State<NativeAdWidget> {
+class _NativeAdWidgetState extends ConsumerState<NativeAdWidget> {
   BannerAd? _ad;
   bool _isAdLoaded = false;
 
@@ -50,6 +53,12 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // 🚫 HIDE 100% OF ADS FOR SUBSCRIBED USERS
+    final isSubscribed = ref.watch(subscriptionProvider).isSubscribed;
+    if (isSubscribed) {
+      return const SizedBox.shrink();
+    }
+
     if (!_isAdLoaded || _ad == null) {
       return const SizedBox.shrink();
     }

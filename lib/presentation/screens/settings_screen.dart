@@ -303,22 +303,23 @@ class SettingsScreen extends ConsumerWidget {
                                   Text(
                                     isSubscribed && activePlanName != null
                                         ? 'Active: $activePlanName'
-                                        : 'Subscription Plans',
+                                        : 'Upgrade to Celestial Membership',
                                     style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  const SizedBox(height: 3),
+                                  const SizedBox(height: 2),
                                   Text(
                                     isSubscribed
-                                        ? '10 Daily AI Questions ✨'
-                                        : 'Unlock 10 Daily AI Questions',
-                                    style: const TextStyle(
+                                        ? (subState.expiryDate != null
+                                            ? 'Expires on ${subState.expiryDate!.day}/${subState.expiryDate!.month}/${subState.expiryDate!.year}'
+                                            : 'Unlimited AI Oracle & Ad-Free Guidance')
+                                        : 'Get 10 daily AI Oracle questions & ad-free experience',
+                                    style: TextStyle(
                                       fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
+                                      color: Colors.white.withValues(alpha: 0.9),
                                     ),
                                   ),
                                 ],

@@ -12,7 +12,6 @@ import '../../data/models/love_compatibility_result.dart';
 import '../../data/models/coffee_cup_result.dart';
 import '../../data/models/special_results.dart';
 import '../../state/providers/reading_provider.dart';
-import '../../state/providers/ai_provider.dart';
 import '../widgets/loading_shimmer.dart';
 import '../widgets/error_retry_widget.dart';
 import '../widgets/native_ad_widget.dart';

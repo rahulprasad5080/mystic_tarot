@@ -1,25 +1,26 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/reading_types.dart';
 import '../../core/l10n/generated/app_localizations.dart';
 import '../../data/services/ad_service.dart';
+import '../../state/providers/subscription_provider.dart';
 
 /// Card selection screen matching the exact UI design mockup:
-/// - Light celestial background with soft light blue cards.
-/// - 3 columns grid of 22 Major Arcana cards with circular star emblem & Roman numerals.
-/// - Top action row with "Focus on your question and choose a card from the Major Arcana" and "Random Pick" pill button.
-/// - Reveal Reading action button.
-class CardSelectScreen extends StatefulWidget {
+class CardSelectScreen extends ConsumerStatefulWidget {
   final ReadingType readingType;
 
-  const CardSelectScreen({super.key, required this.readingType});
+  const CardSelectScreen({
+    super.key,
+    required this.readingType,
+  });
 
   @override
-  State<CardSelectScreen> createState() => _CardSelectScreenState();
+  ConsumerState<CardSelectScreen> createState() => _CardSelectScreenState();
 }
 
-class _CardSelectScreenState extends State<CardSelectScreen>
+class _CardSelectScreenState extends ConsumerState<CardSelectScreen>
     with SingleTickerProviderStateMixin {
   int? _selectedCard;
   late AnimationController _gridIntroController;
@@ -305,8 +306,9 @@ class _CardSelectScreenState extends State<CardSelectScreen>
                         child: ElevatedButton(
                           onPressed: _selectedCard != null
                               ? () {
-                                  HapticFeedback.mediumImpact();
+                                  final isSub = ref.read(subscriptionProvider).isSubscribed;
                                   AdService.instance.showInterstitialAd(
+                                    isSubscribed: isSub,
                                     onAdDismissed: () {
                                       if (!mounted) return;
                                       Navigator.of(context).pushReplacementNamed(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/reading_types.dart';
 import '../../core/l10n/generated/app_localizations.dart';
 import '../../data/services/ad_service.dart';
+import '../../state/providers/subscription_provider.dart';
 
 /// Zodiac sign color model for soft pastel circles and symbol colors
 class ZodiacVisual {
@@ -19,17 +21,17 @@ class ZodiacVisual {
 
 /// Screen to select two zodiac signs for Love Compatibility & Past Lives Connection readings,
 /// matching the exact design of the Zodiac selection mockup.
-class CompatibilityInputScreen extends StatefulWidget {
+class CompatibilityInputScreen extends ConsumerStatefulWidget {
   final ReadingType readingType;
 
   const CompatibilityInputScreen({super.key, required this.readingType});
 
   @override
-  State<CompatibilityInputScreen> createState() =>
+  ConsumerState<CompatibilityInputScreen> createState() =>
       _CompatibilityInputScreenState();
 }
 
-class _CompatibilityInputScreenState extends State<CompatibilityInputScreen> {
+class _CompatibilityInputScreenState extends ConsumerState<CompatibilityInputScreen> {
   String _sign1 = 'Aries';
   String _sign2 = 'Aries';
 
@@ -232,7 +234,9 @@ class _CompatibilityInputScreenState extends State<CompatibilityInputScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
+                    final isSub = ref.read(subscriptionProvider).isSubscribed;
                     AdService.instance.showInterstitialAd(
+                      isSubscribed: isSub,
                       onAdDismissed: () {
                         if (!mounted) return;
                         Navigator.of(context).pushReplacementNamed(

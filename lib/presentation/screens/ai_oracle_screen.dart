@@ -7,7 +7,6 @@ import '../../state/providers/auth_provider.dart';
 import '../../state/providers/subscription_provider.dart';
 import '../../data/services/ai_service.dart';
 import '../../data/services/user_profile_service.dart';
-import '../../data/models/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/subscription_sheet.dart';

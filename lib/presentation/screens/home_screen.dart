@@ -5,6 +5,7 @@ import '../../core/constants/reading_types.dart';
 import '../../core/l10n/generated/app_localizations.dart';
 import '../../state/providers/auth_provider.dart';
 import '../../data/services/ad_service.dart';
+import '../../state/providers/subscription_provider.dart';
 import '../widgets/native_ad_widget.dart';
 
 /// Main home screen matching the exact design of the Divine Readings app mockup.
@@ -18,7 +19,9 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _onReadingTap(ReadingType reading) {
+    final isSub = ref.read(subscriptionProvider).isSubscribed;
     AdService.instance.showInterstitialAd(
+      isSubscribed: isSub,
       onAdDismissed: () {
         if (!mounted) return;
         if (reading.inputType == ReadingInputType.twoSigns) {
@@ -262,7 +265,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: GestureDetector(
                         onTap: () {
+                          final isSub = ref.read(subscriptionProvider).isSubscribed;
                           AdService.instance.showInterstitialAd(
+                            isSubscribed: isSub,
                             onAdDismissed: () {
                               if (!mounted) return;
                               Navigator.of(context).pushNamed('/ai-oracle');

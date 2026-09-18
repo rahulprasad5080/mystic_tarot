@@ -56,8 +56,17 @@ class AdService {
     );
   }
 
-  /// Show Interstitial Ad when user opens an AI Reading option, enforcing frequency capping.
-  void showInterstitialAd({required VoidCallback onAdDismissed}) {
+  /// Show Interstitial Ad when user opens an AI Reading option, enforcing frequency capping and subscription check.
+  void showInterstitialAd({
+    required VoidCallback onAdDismissed,
+    bool isSubscribed = false,
+  }) {
+    // 🚫 HIDE 100% OF INTERSTITIAL ADS FOR SUBSCRIBED USERS
+    if (isSubscribed) {
+      onAdDismissed();
+      return;
+    }
+
     if (canShowInterstitial && _interstitialAd != null) {
       _lastInterstitialShownTime = DateTime.now();
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
