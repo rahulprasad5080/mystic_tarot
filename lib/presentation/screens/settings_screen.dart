@@ -624,7 +624,7 @@ class SettingsScreen extends ConsumerWidget {
   void _shareApp() {
     SharePlus.instance.share(
       ShareParams(
-        text: 'Discover your destiny with Mystic Tarot! Download now: https://play.google.com/store/apps/details?id=com.ably.tarot_card_reading',
+        text: 'Discover your destiny with Ably Tarot Card Reading! Download now: https://play.google.com/store/apps/details?id=com.ably.tarot_card_reading',
       ),
     );
   }

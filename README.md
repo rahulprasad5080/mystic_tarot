@@ -1,4 +1,4 @@
-# 🔮 Mystic Tarot & Spiritual Reading App
+# 🔮 Ably Tarot Card Reading App
 
 A modern, mystical Flutter application providing personalized Tarot, Astrology, Love Compatibility, and Spiritual Readings powered by **DivineAPI**. Designed with a breathtaking celestial glassmorphism UI, smooth micro-animations, and multi-language support.
 

@@ -177,9 +177,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                   // Header Title
                   const Text(
-                    'Ably Tarot',
+                    'Ably Tarot Card Reading',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF006884),
                       letterSpacing: -0.3,
