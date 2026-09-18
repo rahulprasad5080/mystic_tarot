@@ -1,12 +1,12 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../data/services/remote_config_service.dart';
 
 /// API constants sourced from environment and the DivineAPI OpenAPI spec.
 class ApiConstants {
   ApiConstants._();
 
   /// Default Base URL for DivineAPI Horoscope & Tarot endpoints.
-  static String get baseUrl =>
-      dotenv.env['DIVINE_API_BASE_URL'] ?? 'https://astroapi-5.divineapi.com';
+  static String get baseUrl => RemoteConfigService.divineApiBaseUrl;
 
   /// Domain host URLs for different DivineAPI service tiers:
   static const String hostHoroscopeTarot = 'https://astroapi-5.divineapi.com';
@@ -101,12 +101,11 @@ class ApiConstants {
     return hostTranslator;
   }
 
-  /// API key loaded from .env file.
-  static String get apiKey => dotenv.env['DIVINE_API_KEY'] ?? '';
+  /// API key loaded from Remote Config / .env file.
+  static String get apiKey => RemoteConfigService.divineApiKey;
 
-  /// Auth Token (JWT) loaded from .env file. Defaults to apiKey if absent.
-  static String get authToken =>
-      dotenv.env['DIVINE_API_AUTH_TOKEN'] ?? apiKey;
+  /// Auth Token (JWT) loaded from Remote Config / .env file. Defaults to apiKey if absent.
+  static String get authToken => RemoteConfigService.divineApiAuthToken;
 
   // ──────────────────────────── Horoscopes ────────────────────────────────
   static const String dailyHoroscope = '/api/v5/daily-horoscope';

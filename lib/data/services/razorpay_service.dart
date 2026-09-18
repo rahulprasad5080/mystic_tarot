@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../models/subscription_plan.dart';
+import 'remote_config_service.dart';
 
 typedef PaymentSuccessCallback = void Function(PaymentSuccessResponse response);
 typedef PaymentErrorCallback = void Function(PaymentFailureResponse response);
@@ -54,7 +54,7 @@ class RazorpayService {
     _onError = onError;
     _onExternalWallet = onExternalWallet;
 
-    final keyId = dotenv.env['RAZORPAY_KEY_ID'] ?? 'rzp_test_AblyTarot2026';
+    final keyId = RemoteConfigService.razorpayKeyId;
     final amountInPaise = (plan.priceINR * 100).toInt();
 
     final options = {

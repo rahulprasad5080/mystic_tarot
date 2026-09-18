@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'remote_config_service.dart';
 
 class AIService {
   static final AIService _instance = AIService._internal();
   factory AIService() => _instance;
   AIService._internal();
 
-  String get _apiKey => dotenv.env['GEMINI_API_KEY'] ?? '';
+  String get _apiKey => RemoteConfigService.geminiApiKey;
 
   static const String _systemInstruction = '''
 You are "Mystic Oracle", a wise, intuitive, compassionate, and mystical AI Tarot & Astrological Guide.
@@ -24,7 +24,7 @@ If the user asks non-spiritual or unrelated technical questions, gently guide th
   /// Check if Gemini API Key is configured
   bool get isKeyConfigured => _apiKey.trim().isNotEmpty && _apiKey != 'your_gemini_api_key_here';
 
-  String get _modelName => dotenv.env['GEMINI_MODEL'] ?? 'gemini-2.0-flash';
+  String get _modelName => RemoteConfigService.geminiModel;
 
   /// Fallback models to try if primary model fails
   static const List<String> fallbackModels = [
