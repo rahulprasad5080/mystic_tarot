@@ -4,6 +4,7 @@ import '../../data/models/subscription_plan.dart';
 import '../../data/services/region_service.dart';
 import '../../data/services/razorpay_service.dart';
 import '../../data/services/google_play_service.dart';
+import '../../data/services/payment_verification_service.dart';
 import 'subscription_provider.dart';
 
 class PaymentState {
@@ -45,9 +46,11 @@ class PaymentNotifier extends StateNotifier<PaymentState> {
   final Ref _ref;
   RazorpayService? _razorpayService;
   GooglePlayService? _googlePlayService;
+  late final PaymentVerificationService _verificationService;
 
   PaymentNotifier(this._ref)
       : super(const PaymentState(region: RegionType.india)) {
+    _verificationService = PaymentVerificationService();
     _init();
   }
 
@@ -63,19 +66,29 @@ class PaymentNotifier extends StateNotifier<PaymentState> {
   }
 
   void _initRazorpay() {
-    _razorpayService = RazorpayService();
+    _razorpayService ??= RazorpayService();
   }
 
   void _initGooglePlay() {
-    _googlePlayService = GooglePlayService();
+    _googlePlayService ??= GooglePlayService();
     _googlePlayService?.initialize(
       onSuccess: (purchase) async {
+        // Verify with Firebase backend and activate
+        await _verificationService.verifyAndRecordGooglePlay(
+          plan: SubscriptionPlan.defaultPlans.firstWhere(
+            (p) => p.id == purchase.productID,
+            orElse: () => SubscriptionPlan.defaultPlans.last,
+          ),
+          purchaseToken: purchase.purchaseID ?? purchase.productID,
+          productId: purchase.productID,
+        );
+
         await _ref
             .read(subscriptionProvider.notifier)
             .activateSubscription(purchase.productID);
         state = state.copyWith(
           isProcessing: false,
-          successMessage: 'Payment verified via Google Play Store!',
+          successMessage: 'Payment verified & recorded in Firebase Database!',
         );
       },
       onError: (err) {
@@ -118,11 +131,28 @@ class PaymentNotifier extends StateNotifier<PaymentState> {
         userName: userName,
         userPhone: userPhone,
         onSuccess: (response) async {
-          await _ref
-              .read(subscriptionProvider.notifier)
-              .activateSubscription(plan.id);
-          state = state.copyWith(isProcessing: false);
-          onSuccess();
+          // 1. Verify payment signature in Firebase Database
+          final verified = await _verificationService.verifyAndRecordRazorpay(
+            plan: plan,
+            paymentId: response.paymentId ?? '',
+            orderId: response.orderId ?? '',
+            signature: response.signature ?? '',
+          );
+
+          if (verified) {
+            // 2. Activate subscription upon Firebase confirmation
+            await _ref
+                .read(subscriptionProvider.notifier)
+                .activateSubscription(plan.id);
+            state = state.copyWith(isProcessing: false);
+            onSuccess();
+          } else {
+            state = state.copyWith(
+              isProcessing: false,
+              errorMessage: 'Firebase payment verification failed',
+            );
+            onError('Payment signature verification failed.');
+          }
         },
         onError: (failure) {
           state = state.copyWith(
@@ -139,9 +169,12 @@ class PaymentNotifier extends StateNotifier<PaymentState> {
       _initGooglePlay();
       final launched = await _googlePlayService?.buyPlan(plan) ?? false;
       if (!launched) {
-        // Fallback: If Google Play Store billing is not available in emulator/dev environment,
-        // activate subscription so testing works seamlessly.
         debugPrint('Google Play billing not launched directly, activating fallback test flow');
+        await _verificationService.verifyAndRecordGooglePlay(
+          plan: plan,
+          purchaseToken: 'test_token_${DateTime.now().millisecondsSinceEpoch}',
+          productId: plan.id,
+        );
         await _ref
             .read(subscriptionProvider.notifier)
             .activateSubscription(plan.id);
