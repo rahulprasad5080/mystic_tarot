@@ -30,6 +30,9 @@ class RemoteConfigService {
         'GEMINI_MODEL': 'gemini-2.5-flash-lite',
         'RAZORPAY_KEY_ID': 'rzp_test_AblyTarot2026',
         'DIVINE_API_ENABLE_TRANSLATOR': 'true',
+        'ADMOB_APP_ID': 'ca-app-pub-9924987494596109~9371352855',
+        'ADMOB_NATIVE_AD_UNIT_ID': 'ca-app-pub-9924987494596109/4309085093',
+        'ADMOB_INTERSTITIAL_AD_UNIT_ID': 'ca-app-pub-9924987494596109/6788355887',
       };
 
       await _remoteConfig!.setDefaults(defaults);
@@ -82,5 +85,20 @@ class RemoteConfigService {
   static String get razorpayKeyId {
     final key = _getString('RAZORPAY_KEY_ID');
     return key.isNotEmpty ? key : 'rzp_test_AblyTarot2026';
+  }
+
+  static String get admobAppId {
+    final val = _getString('ADMOB_APP_ID');
+    return val.isNotEmpty ? val : 'ca-app-pub-9924987494596109~9371352855';
+  }
+
+  static String get admobNativeAdUnitId {
+    final val = _getString('ADMOB_NATIVE_AD_UNIT_ID');
+    return val.isNotEmpty ? val : 'ca-app-pub-9924987494596109/4309085093';
+  }
+
+  static String get admobInterstitialAdUnitId {
+    final val = _getString('ADMOB_INTERSTITIAL_AD_UNIT_ID');
+    return val.isNotEmpty ? val : 'ca-app-pub-9924987494596109/6788355887';
   }
 }
