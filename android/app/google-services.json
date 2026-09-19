@@ -12,7 +12,20 @@
           "package_name": "com.ably.tarot_card_reading"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "802504396542-ss3bpqqpgq5asi55d32ul3nsnc493uqt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ably.tarot_card_reading",
+            "certificate_hash": "c292180020280da0f47fc1ccee891be129ca1340"
+          }
+        },
+        {
+          "client_id": "802504396542-1rggekm8me51i9ap1e3djch3cqf27708.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC2c_ilZG65WzX83zwqpjiW56BqetjJpv4"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "802504396542-1rggekm8me51i9ap1e3djch3cqf27708.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
