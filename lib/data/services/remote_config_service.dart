@@ -21,21 +21,6 @@ class RemoteConfigService {
         ),
       );
 
-      // Default values if Remote Config hasn't fetched yet
-      const defaults = <String, dynamic>{
-        'DIVINE_API_KEY': '',
-        'DIVINE_API_AUTH_TOKEN': '',
-        'DIVINE_API_BASE_URL': 'https://astroapi-5.divineapi.com',
-        'GEMINI_API_KEY': '',
-        'GEMINI_MODEL': 'gemini-2.5-flash-lite',
-        'RAZORPAY_KEY_ID': 'rzp_test_AblyTarot2026',
-        'DIVINE_API_ENABLE_TRANSLATOR': 'true',
-        'ADMOB_APP_ID': 'ca-app-pub-9924987494596109~9371352855',
-        'ADMOB_NATIVE_AD_UNIT_ID': 'ca-app-pub-9924987494596109/4309085093',
-        'ADMOB_INTERSTITIAL_AD_UNIT_ID': 'ca-app-pub-9924987494596109/6788355887',
-      };
-
-      await _remoteConfig!.setDefaults(defaults);
       await _remoteConfig!.fetchAndActivate();
       debugPrint('Firebase Remote Config initialized and parameters activated!');
     } catch (e) {
@@ -67,7 +52,7 @@ class RemoteConfigService {
 
   static String get divineApiBaseUrl {
     final url = _getString('DIVINE_API_BASE_URL');
-    return url.isNotEmpty ? url : 'https://astroapi-5.divineapi.com';
+    return url.isNotEmpty ? url : '';
   }
 
   static bool get enableTranslator {
@@ -79,26 +64,26 @@ class RemoteConfigService {
 
   static String get geminiModel {
     final model = _getString('GEMINI_MODEL');
-    return model.isNotEmpty ? model : 'gemini-2.5-flash-lite';
+    return model.isNotEmpty ? model : '';
   }
 
   static String get razorpayKeyId {
     final key = _getString('RAZORPAY_KEY_ID');
-    return key.isNotEmpty ? key : 'rzp_test_AblyTarot2026';
+    return key.isNotEmpty ? key : '';
   }
 
   static String get admobAppId {
     final val = _getString('ADMOB_APP_ID');
-    return val.isNotEmpty ? val : 'ca-app-pub-9924987494596109~9371352855';
+    return val.isNotEmpty ? val : '';
   }
 
   static String get admobNativeAdUnitId {
     final val = _getString('ADMOB_NATIVE_AD_UNIT_ID');
-    return val.isNotEmpty ? val : 'ca-app-pub-9924987494596109/4309085093';
+    return val.isNotEmpty ? val : '';
   }
 
   static String get admobInterstitialAdUnitId {
     final val = _getString('ADMOB_INTERSTITIAL_AD_UNIT_ID');
-    return val.isNotEmpty ? val : 'ca-app-pub-9924987494596109/6788355887';
+    return val.isNotEmpty ? val : '';
   }
 }
