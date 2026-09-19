@@ -91,7 +91,7 @@ To unlock personalized AI Tarot readings and cosmic guidance, please add your **
         'https://generativelanguage.googleapis.com/v1beta/$modelPath:generateContent?key=$_apiKey',
       );
 
-      final response = await http.post(
+      http.Response response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -102,6 +102,30 @@ To unlock personalized AI Tarot readings and cosmic guidance, please add your **
           }
         }),
       );
+
+      // Automatic fallback if primary model is overloaded (503) or not found (404)
+      if (response.statusCode != 200 &&
+          (response.statusCode == 503 || response.statusCode == 404) &&
+          _modelName != 'gemini-flash-lite-latest') {
+        debugPrint('⚠️ Model $_modelName failed (${response.statusCode}). Retrying with gemini-flash-lite-latest...');
+        final fallbackUrl = Uri.parse(
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=$_apiKey',
+        );
+        final fallbackResponse = await http.post(
+          fallbackUrl,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'contents': contents,
+            'generationConfig': {
+              'temperature': 0.7,
+              'maxOutputTokens': 1000,
+            }
+          }),
+        );
+        if (fallbackResponse.statusCode == 200) {
+          response = fallbackResponse;
+        }
+      }
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

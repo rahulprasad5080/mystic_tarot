@@ -50,10 +50,7 @@ class RemoteConfigService {
     return token.isNotEmpty ? token : divineApiKey;
   }
 
-  static String get divineApiBaseUrl {
-    final url = _getString('DIVINE_API_BASE_URL');
-    return url.isNotEmpty ? url : '';
-  }
+  static String get divineApiBaseUrl => _getString('DIVINE_API_BASE_URL');
 
   static bool get enableTranslator {
     final val = _getString('DIVINE_API_ENABLE_TRANSLATOR', defaultValue: 'true');
@@ -62,28 +59,14 @@ class RemoteConfigService {
 
   static String get geminiApiKey => _getString('GEMINI_API_KEY');
 
-  static String get geminiModel {
-    final model = _getString('GEMINI_MODEL');
-    return model.isNotEmpty ? model : '';
-  }
+  static String get geminiModel => _getString('GEMINI_MODEL');
 
-  static String get razorpayKeyId {
-    final key = _getString('RAZORPAY_KEY_ID');
-    return key.isNotEmpty ? key : '';
-  }
+  static String get razorpayKeyId => _getString('RAZORPAY_KEY_ID');
 
-  static String get admobAppId {
-    final val = _getString('ADMOB_APP_ID');
-    return val.isNotEmpty ? val : '';
-  }
+  static String get admobAppId => _getString('ADMOB_APP_ID');
 
-  static String get admobNativeAdUnitId {
-    final val = _getString('ADMOB_NATIVE_AD_UNIT_ID');
-    return val.isNotEmpty ? val : '';
-  }
+  static String get admobNativeAdUnitId => _getString('ADMOB_NATIVE_AD_UNIT_ID');
 
-  static String get admobInterstitialAdUnitId {
-    final val = _getString('ADMOB_INTERSTITIAL_AD_UNIT_ID');
-    return val.isNotEmpty ? val : '';
-  }
+  static String get admobInterstitialAdUnitId =>
+      _getString('ADMOB_INTERSTITIAL_AD_UNIT_ID');
 }
